@@ -16,7 +16,7 @@ struct StepsView: View {
             List{
                 
                 ForEach($steps, id: \.id) { $step in
-                    NavigationLink(destination: DetailView(step: $step, steps: $steps)){
+                    NavigationLink(destination: DetailView(steps: $steps)){
                         
                         HStack{
                             Image(step.file)
@@ -30,11 +30,10 @@ struct StepsView: View {
                 }
                 
             }
-            //.onDelete(perform: deleteItem) vedere le slide
+            .navigationTitle("Steps")
+            .navigationBarTitleDisplayMode(.large)
         }
-        .navigationTitle("Step")
-        .navigationBarTitleDisplayMode(.large)
-        .scrollContentBackground(.hidden)
+        //.scrollContentBackground(.hidden)
     }
 }
 

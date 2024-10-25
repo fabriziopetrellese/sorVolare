@@ -42,7 +42,7 @@ struct FirstView: View {
         }()
         
         ZStack {
-            Color.cyan.opacity(0.18).ignoresSafeArea()
+            Color.cyan.opacity(0.17).ignoresSafeArea()
             VStack {
                 /*
                  Text("Select a departure and destination")
@@ -109,13 +109,13 @@ struct FirstView: View {
                 .mapStyle(.hybrid(elevation: .realistic))
                 .cornerRadius(1000)
                 .padding(.horizontal, 10)
-                .padding(.vertical, 10)
+                .padding(.vertical, 8)
                 
                 
                 // Visualizza la distanza del viaggio
                 Text(distance > 0 ? "Distance: \(String(format: "%.0f", distance)) km - Flight hours: \(String(format: "%.1f", hours))" : "Select a trip to see the distance")
                     .font(.system(size: 22, weight: .light, design: .rounded))
-                    .padding(.vertical, 9)
+                    .padding(.bottom, 8)
                     .foregroundStyle(.black.opacity(0.8))
                 
                 // Pulsante per aprire la modal della data
@@ -133,7 +133,7 @@ struct FirstView: View {
                 .sheet(isPresented: $dateModal) {
                     DateModal(selectedDate: $selectedDate)
                 }
-                .padding(.top, 15)
+                //.padding(.top, 15)
                 
                 //Spacer()
                 
