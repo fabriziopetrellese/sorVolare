@@ -16,33 +16,34 @@ struct AdvicesView: View {
             List{
                 ForEach($consigli, id: \.id) { $consiglio in
                     
-                    HStack(alignment: .top, spacing: 15){
-                        Image(consiglio.file)
-                            .resizable()
-                            .scaledToFill()
-                        //.cornerRadius(10)
-                            .frame(width: 135, height: 90)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 3)
-                        
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(consiglio.title)
-                                .font(.headline)
-                                .foregroundColor(.primary)
+                    NavigationLink(destination: DetailView()) {
+                        HStack(spacing: 16){
+                            Image(consiglio.file)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 80, height: 80)
+                                .cornerRadius(15)
+                                .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 5)
                             
-                            Text("consiglio.description")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .lineLimit(2) //Limita a due righe
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(consiglio.title.uppercased())
+                                    .font(.headline)
+                                    .foregroundColor(.primary)
+                                
+                                Text("consiglio.description")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(3)
+                            }
                         }
+                        .padding(.vertical, 8)
+                        
                     }
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 15).fill(Color(.systemGray6).opacity(0.3)).stroke(.gray, lineWidth: 0.1))
-                    .shadow(color: Color.black.opacity(0.015), radius: 4, x: 0, y: 2)
                     
                 }//ForEach
+                .listRowBackground(Color.clear) // Rende lo sfondo della riga trasparente
             }//List
-            .listStyle(InsetGroupedListStyle())
+            .listStyle(PlainListStyle())
             .navigationTitle("Advices")
             .navigationBarTitleDisplayMode(.large)
         }

@@ -12,28 +12,33 @@ struct StepsView: View {
     
     var body: some View {
         
-        NavigationStack{
-            List{
-                
+        NavigationStack {
+            List {
                 ForEach($steps, id: \.id) { $step in
-                    NavigationLink(destination: DetailView(steps: $steps)){
+                    
+                    HStack(spacing: 15) {
+                        Image(step.file)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 135, height: 90)
+                            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 3)
                         
-                        HStack{
-                            Image(step.file)
-                                .resizable()
-                                .cornerRadius(10)
-                                .frame(width: 90, height: 90)
-                            Text(step.title.uppercased())
-                        }
-                        
+                        Text(step.title.uppercased())
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        Spacer()
                     }
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 15).fill(Color(.systemGray6).opacity(0.3)).stroke(.gray, lineWidth: 0.1))
+                    .shadow(color: Color.black.opacity(0.015), radius: 4, x: 0, y: 2)
                 }
-                
             }
-            .navigationTitle("Steps")
+            .listStyle(InsetGroupedListStyle())
+            .navigationTitle("Advices")
             .navigationBarTitleDisplayMode(.large)
         }
         //.scrollContentBackground(.hidden)
+        
     }
 }
 

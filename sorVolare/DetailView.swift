@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct DetailView: View {
-    @Binding var steps: [Step]
     
     var body: some View {
         Text("Hello, World!")

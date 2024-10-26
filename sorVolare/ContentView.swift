@@ -12,7 +12,7 @@ struct ContentView: View {
     
     @State private var selection: Int = 0
     @State private var consigli = [Consiglio(title: "Consiglio 1", file: "iphone180"), Consiglio(title: "Consiglio 2", file: "airport"), Consiglio(title: "Consiglio 3", file: "durante"), Consiglio(title: "Consiglio 4", file: "turbo"), Consiglio(title: "Consiglio 5", file: "landing"), Consiglio(title: "Consiglio 6", file: "DECOLLO")]
-    @State private var steps = [Step(title: "step 1", file: "checkin"), Step(title: "step 2", file: "entrata"), Step(title: "step 3", file: "deco"), Step(title: "step 4", file: "atter"), Step(title: "step 5", file: "")]
+    @State private var steps = [Step(title: "rullaggio", file: "checkin"), Step(title: "decollo", file: "entrata"), Step(title: "atterraggio", file: "deco"), Step(title: "turbolenze", file: "atter"), Step(title: "step 5", file: "")]
     
     
     var body: some View {
