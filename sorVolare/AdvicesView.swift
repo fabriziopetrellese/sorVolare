@@ -16,16 +16,33 @@ struct AdvicesView: View {
             List{
                 ForEach($consigli, id: \.id) { $consiglio in
                     
-                    HStack{
+                    HStack(alignment: .top, spacing: 15){
                         Image(consiglio.file)
                             .resizable()
-                            .cornerRadius(10)
-                            .frame(width: 110, height: 110)
-                        Text(consiglio.title)
+                            .scaledToFill()
+                        //.cornerRadius(10)
+                            .frame(width: 135, height: 90)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 3)
+                        
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(consiglio.title)
+                                .font(.headline)
+                                .foregroundColor(.primary)
+                            
+                            Text("consiglio.description")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .lineLimit(2) //Limita a due righe
+                        }
                     }
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 15).fill(Color(.systemGray6).opacity(0.3)).stroke(.gray, lineWidth: 0.1))
+                    .shadow(color: Color.black.opacity(0.015), radius: 4, x: 0, y: 2)
                     
                 }//ForEach
             }//List
+            .listStyle(InsetGroupedListStyle())
             .navigationTitle("Advices")
             .navigationBarTitleDisplayMode(.large)
         }
