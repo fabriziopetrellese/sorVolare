@@ -11,7 +11,7 @@ import MapKit
 struct ContentView: View {
     
     @State private var selection: Int = 0
-    @State private var consigli = [Consiglio(title: "Consiglio 1", file: "iphone180"), Consiglio(title: "Consiglio 2", file: "airport"), Consiglio(title: "Consiglio 3", file: "durante"), Consiglio(title: "Consiglio 4", file: "turbo"), Consiglio(title: "Consiglio 5", file: "landing"), Consiglio(title: "Consiglio 6", file: "DECOLLO")]
+    @State private var consigli = [Consiglio(title: "Consiglio 1", file: "iphone180", description: "descrizione consiglio 1"), Consiglio(title: "Consiglio 2", file: "airport", description: "descrizione consiglio 2"), Consiglio(title: "Consiglio 3", file: "durante", description: "descrizione consiglio 3"), Consiglio(title: "Consiglio 4", file: "turbo", description: "descrizione consiglio 4"), Consiglio(title: "Consiglio 5", file: "landing", description: "descrizione consiglio 5"), Consiglio(title: "Consiglio 6", file: "DECOLLO", description: "descrizione consiglio 6")]
     @State private var steps = [Step(title: "rullaggio", file: "checkin"), Step(title: "decollo", file: "entrata"), Step(title: "atterraggio", file: "deco"), Step(title: "turbolenze", file: "atter"), Step(title: "step 5", file: "")]
     
     

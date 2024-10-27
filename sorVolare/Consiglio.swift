@@ -11,5 +11,6 @@ struct Consiglio: Identifiable, Codable {
     var id = UUID()
     var title: String
     var file: String
-    var original = true
+    //var original = true
+    var description: String
 }

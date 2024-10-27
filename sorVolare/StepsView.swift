@@ -34,7 +34,7 @@ struct StepsView: View {
                 }
             }
             .listStyle(InsetGroupedListStyle())
-            .navigationTitle("Advices")
+            .navigationTitle("Steps")
             .navigationBarTitleDisplayMode(.large)
         }
         //.scrollContentBackground(.hidden)

@@ -16,7 +16,7 @@ struct AdvicesView: View {
             List{
                 ForEach($consigli, id: \.id) { $consiglio in
                     
-                    NavigationLink(destination: DetailView()) {
+                    NavigationLink(destination: DetailView(consiglio: consiglio)) {
                         HStack(spacing: 16){
                             Image(consiglio.file)
                                 .resizable()
@@ -59,5 +59,5 @@ struct AdvicesView: View {
 
 
 #Preview {
-    AdvicesView(consigli: .constant([Consiglio(title: "Consiglio 1",file: "iphone180"),Consiglio(title: "Consiglio 2",file: "airport"),Consiglio(title: "Consiglio 3",file: "durante"),Consiglio(title: "Consiglio 4",file: "turbo"),Consiglio(title: "Consiglio",file: "landing"),Consiglio(title: "Consiglio 5",file: "DECOLLO")]))
+    AdvicesView(consigli: .constant([Consiglio(title: "Consiglio 1",file: "iphone180", description: ""),Consiglio(title: "Consiglio 2",file: "airport", description: ""),Consiglio(title: "Consiglio 3",file: "durante", description: ""),Consiglio(title: "Consiglio 4",file: "turbo", description: ""),Consiglio(title: "Consiglio 5",file: "landing", description: ""),Consiglio(title: "Consiglio 6",file: "DECOLLO", description: "")]))
 }

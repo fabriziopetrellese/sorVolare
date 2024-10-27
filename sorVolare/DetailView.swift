@@ -9,9 +9,12 @@
 import SwiftUI
 
 struct DetailView: View {
+    var consiglio: Consiglio
     
     var body: some View {
-        Text("Hello, World!")
+        Text(consiglio.title)
+        
+        Text(consiglio.description)
         
     }//body
 }
