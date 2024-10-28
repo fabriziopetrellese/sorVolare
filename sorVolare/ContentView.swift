@@ -21,20 +21,21 @@ struct ContentView: View {
             
             FirstView()
                 .tabItem {
-                    Label("Avvio", systemImage: "airplane.departure")
+                    Label("Simulation", systemImage: "airplane.departure")
                         .accentColor(.primary)
                 }.tag(0)
             
-            AdvicesView(consigli: $consigli)
+//            AdvicesView(consigli: $consigli)
+                AdvicesView()
                 .tabItem {
-                    Label("Advices", systemImage: "lightbulb.fill").font(.system(size: 10))
+                    Label("Relaxing", systemImage: "lightbulb.fill").font(.system(size: 10))
                         .accentColor(.primary)
                 }
                 .tag(1)
             
             StepsView(steps: $steps)
                 .tabItem {
-                    Label("Steps", systemImage: "list.number")
+                    Label("Progress", systemImage: "list.number")
                         .accentColor(.primary)
                 }
         }//TabView

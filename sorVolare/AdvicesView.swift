@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct AdvicesView: View {
-    @Binding var consigli: [Consiglio]
+    //@Binding var consigli: [Consiglio]
     
     var body: some View {
         
+        
+        Text("DA implementare")
+        /*
         NavigationStack {
             List{
                 ForEach($consigli, id: \.id) { $consiglio in
@@ -48,7 +51,9 @@ struct AdvicesView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         //.scrollContentBackground(.hidden)
+        */
     }
+    
 }
 
 /*func deleteItem(offsets: IndexSet) {
@@ -59,5 +64,5 @@ struct AdvicesView: View {
 
 
 #Preview {
-    AdvicesView(consigli: .constant([Consiglio(title: "Consiglio 1",file: "iphone180", description: ""),Consiglio(title: "Consiglio 2",file: "airport", description: ""),Consiglio(title: "Consiglio 3",file: "durante", description: ""),Consiglio(title: "Consiglio 4",file: "turbo", description: ""),Consiglio(title: "Consiglio 5",file: "landing", description: ""),Consiglio(title: "Consiglio 6",file: "DECOLLO", description: "")]))
+    //AdvicesView(consigli: .constant([Consiglio(title: "Consiglio 1",file: "iphone180", description: ""),Consiglio(title: "Consiglio 2",file: "airport", description: ""),Consiglio(title: "Consiglio 3",file: "durante", description: ""),Consiglio(title: "Consiglio 4",file: "turbo", description: ""),Consiglio(title: "Consiglio 5",file: "landing", description: ""),Consiglio(title: "Consiglio 6",file: "DECOLLO", description: "")]))
 }
