@@ -9,12 +9,15 @@
 import SwiftUI
 
 struct DetailView: View {
-    var consiglio: Consiglio
+    //var consiglio: Consiglio
     
     var body: some View {
-        Text(consiglio.title)
         
-        Text(consiglio.description)
+        Text("Da implementare")
+        
+        //Text(consiglio.title)
+        
+        //Text(consiglio.description)
         
     }//body
 }

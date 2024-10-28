@@ -41,6 +41,7 @@ struct FirstView: View {
             return nil // Restituisce nil se uno dei valori è NULL
         }()
         
+        NavigationStack {
         ZStack {
             Color.cyan.opacity(0.17).ignoresSafeArea()
             VStack {
@@ -118,11 +119,23 @@ struct FirstView: View {
                     .padding(.bottom, 8)
                     .foregroundStyle(.black.opacity(0.8))
                 
-                // Pulsante per aprire la modal della data
-                Button(action: {
-                    dateModal.toggle()
-                }) {
-                    Text("Select Date: \(formattedDate(selectedDate))")
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                NavigationLink(destination: DetailView()) {
+                    
+                    Text("Simulate")
                         .font(.system(size: 25, weight: .light, design: .rounded))
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -130,9 +143,36 @@ struct FirstView: View {
                         .cornerRadius(10)
                         .padding(.horizontal)
                 }
-                .sheet(isPresented: $dateModal) {
-                    DateModal(selectedDate: $selectedDate)
-                }
+                
+                
+                
+                
+                /*
+                 // Pulsante per aprire la modal della data
+                 Button(action: {
+                 dateModal.toggle()
+                 }) {
+                 Text("Select Date: \(formattedDate(selectedDate))")
+                 .font(.system(size: 25, weight: .light, design: .rounded))
+                 .frame(maxWidth: .infinity)
+                 .padding()
+                 .background(Color.blue.opacity(0.2))
+                 .cornerRadius(10)
+                 .padding(.horizontal)
+                 }
+                 .sheet(isPresented: $dateModal) {
+                 DateModal(selectedDate: $selectedDate)
+                 }
+                 */
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 //.padding(.top, 15)
                 
                 //Spacer()
@@ -172,7 +212,7 @@ struct FirstView: View {
             
         }//ZStack
         
-        
+        }.edgesIgnoringSafeArea(.all)
     }//body
     
     /*func deleteItem(offsets: IndexSet) {
