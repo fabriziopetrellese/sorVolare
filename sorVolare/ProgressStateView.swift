@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct StepsView: View {
+struct ProgressStateView: View {
     @Binding var steps: [Step]
     
     var body: some View {
@@ -50,5 +50,5 @@ struct StepsView: View {
 
 
 #Preview {
-    StepsView(steps: .constant([Step(title:"Step 1", file: "entrata"), Step(title:"Step 2", file: "checkin"), Step(title:"Step 3", file: "deco"), Step(title:"Step 4", file: "atter"), Step(title:"Step 5", file: "uscita")]))
+    ProgressStateView(steps: .constant([Step(title:"Step 1", file: "entrata"), Step(title:"Step 2", file: "checkin"), Step(title:"Step 3", file: "deco"), Step(title:"Step 4", file: "atter"), Step(title:"Step 5", file: "uscita")]))
 }

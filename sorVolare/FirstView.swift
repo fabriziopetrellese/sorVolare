@@ -42,176 +42,176 @@ struct FirstView: View {
         }()
         
         NavigationStack {
-        ZStack {
-            Color.cyan.opacity(0.17).ignoresSafeArea()
-            VStack {
-                /*
-                 Text("Select a departure and destination")
-                 .font(.system(size: 25, weight: .light, design: .rounded))
-                 .padding(.vertical, 3)
-                 */
-                
-                // "Fly from" modal
-                Button(action: {
-                    flyFromModal.toggle()
-                }) {
-                    Text(departure?.capitale ?? "Select a departure")
-                        .font(.system(size: 25, weight: .light, design: .rounded))
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(10)
-                        .padding(.horizontal)
-                }
-                .sheet(isPresented: $flyFromModal) {
-                    DepartDestModal(selectedLocation: $departure, locations: locations)
-                }
-                .padding(.top, 5)
-                
-                // "Fly to" modal
-                Button(action: {
-                    flyTo.toggle()
-                }) {
-                    Text(destination?.capitale ?? "Select a destination")
-                        .font(.system(size: 25, weight: .light, design: .rounded))
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(10)
-                        .padding(.horizontal)
+            ZStack {
+                Color.cyan.opacity(0.17).ignoresSafeArea()
+                VStack {
+                    /*
+                     Text("Select a departure and destination")
+                     .font(.system(size: 25, weight: .light, design: .rounded))
+                     .padding(.vertical, 3)
+                     */
+                    
+                    // "Fly from" modal
+                    Button(action: {
+                        flyFromModal.toggle()
+                    }) {
+                        Text(departure?.capitale ?? "Select a departure")
+                            .font(.system(size: 25, weight: .light, design: .rounded))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                    }
+                    .sheet(isPresented: $flyFromModal) {
+                        DepartDestModal(selectedLocation: $departure, locations: locations)
+                    }
+                    .padding(.top, 5)
+                    
+                    // "Fly to" modal
+                    Button(action: {
+                        flyTo.toggle()
+                    }) {
+                        Text(destination?.capitale ?? "Select a destination")
+                            .font(.system(size: 25, weight: .light, design: .rounded))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                            .padding(.bottom, 8)
+                    }
+                    .sheet(isPresented: $flyTo) {
+                        DepartDestModal(selectedLocation: $destination, locations: locations)
+                    }
+                    
+                    
+                    // Mappa
+                    Map(position: $position) {
+                        if let route = flyingRoute {
+                            MapPolyline(coordinates: route)
+                                .stroke(.yellow, style: StrokeStyle(lineWidth: 1, dash: [5, 3]))
+                                .foregroundStyle(Color.yellow)
+                        }
+                        
+                        // Cerchio per il luogo di partenza
+                        if let flyFrom = departure {
+                            MapCircle(center: CLLocationCoordinate2D(latitude: flyFrom.latitude, longitude: flyFrom.longitude), radius: 13000)
+                                .stroke(Color.yellow.opacity(0.9), lineWidth: 8)
+                        }
+                        
+                        // Cerchio per il luogo di destinazione
+                        if let flyTo = destination {
+                            MapCircle(center: CLLocationCoordinate2D(latitude: flyTo.latitude, longitude: flyTo.longitude), radius: 13000)
+                                .stroke(Color.yellow.opacity(0.9), lineWidth: 8)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 380)
+                    .mapStyle(.hybrid(elevation: .realistic))
+                    .cornerRadius(1000)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 8)
+                    
+                    
+                    // Visualizza la distanza del viaggio
+                    Text(distance > 0 ? "Distance: \(String(format: "%.0f", distance)) km - Flight hours: \(String(format: "%.1f", hours))" : "Select a trip to see the distance")
+                        .font(.system(size: 22, weight: .light, design: .rounded))
                         .padding(.bottom, 8)
-                }
-                .sheet(isPresented: $flyTo) {
-                    DepartDestModal(selectedLocation: $destination, locations: locations)
-                }
-                
-                
-                // Mappa
-                Map(position: $position) {
-                    if let route = flyingRoute {
-                        MapPolyline(coordinates: route)
-                            .stroke(.yellow, style: StrokeStyle(lineWidth: 1, dash: [5, 3]))
-                            .foregroundStyle(Color.yellow)
+                        .foregroundStyle(.black.opacity(0.8))
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    NavigationLink(destination: DetailView()) {
+                        
+                        Text("Start")
+                            .font(.system(size: 25, weight: .light, design: .rounded))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(10)
+                            .padding(.horizontal)
                     }
                     
-                    // Cerchio per il luogo di partenza
-                    if let flyFrom = departure {
-                        MapCircle(center: CLLocationCoordinate2D(latitude: flyFrom.latitude, longitude: flyFrom.longitude), radius: 13000)
-                            .stroke(Color.yellow.opacity(0.9), lineWidth: 8)
+                    
+                    
+                    
+                    /*
+                     // Pulsante per aprire la modal della data
+                     Button(action: {
+                     dateModal.toggle()
+                     }) {
+                     Text("Select Date: \(formattedDate(selectedDate))")
+                     .font(.system(size: 25, weight: .light, design: .rounded))
+                     .frame(maxWidth: .infinity)
+                     .padding()
+                     .background(Color.blue.opacity(0.2))
+                     .cornerRadius(10)
+                     .padding(.horizontal)
+                     }
+                     .sheet(isPresented: $dateModal) {
+                     DateModal(selectedDate: $selectedDate)
+                     }
+                     */
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    //.padding(.top, 15)
+                    
+                    //Spacer()
+                    
+                } //VStack
+                
+                //.background(.green.opacity(0.3))
+                //.background(.cyan.opacity(0.15))
+                .onAppear {
+                    /* Togli il commento se non usi il modale
+                     if let first = locations.first {
+                     flyFromSelection = first
+                     flyToSelection = first
+                     }*/
+                    
+                    position = MapCameraPosition.region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: startingPoint.latitude, longitude: startingPoint.longitude), span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)))
+                }
+                .onChange(of: departure) { _, newValue in
+                    if let newLocation = newValue {
+                        position = MapCameraPosition.region(
+                            MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: newLocation.latitude, longitude: newLocation.longitude), span: MKCoordinateSpan(latitudeDelta: 8, longitudeDelta: 8))
+                        )
+                        updateDistance()
                     }
                     
-                    // Cerchio per il luogo di destinazione
-                    if let flyTo = destination {
-                        MapCircle(center: CLLocationCoordinate2D(latitude: flyTo.latitude, longitude: flyTo.longitude), radius: 13000)
-                            .stroke(Color.yellow.opacity(0.9), lineWidth: 8)
+                    //calcolo le ore di volo
+                    hours = distance/planeAvgSpeed
+                }
+                .onChange(of: destination) { _, newValue in
+                    if let _ = newValue {
+                        updateDistance()
                     }
-                }
-                .frame(maxWidth: .infinity, maxHeight: 380)
-                .mapStyle(.hybrid(elevation: .realistic))
-                .cornerRadius(1000)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
-                
-                
-                // Visualizza la distanza del viaggio
-                Text(distance > 0 ? "Distance: \(String(format: "%.0f", distance)) km - Flight hours: \(String(format: "%.1f", hours))" : "Select a trip to see the distance")
-                    .font(.system(size: 22, weight: .light, design: .rounded))
-                    .padding(.bottom, 8)
-                    .foregroundStyle(.black.opacity(0.8))
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                NavigationLink(destination: DetailView()) {
                     
-                    Text("Simulate")
-                        .font(.system(size: 25, weight: .light, design: .rounded))
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(10)
-                        .padding(.horizontal)
+                    //calcolo le ore di volo
+                    hours = distance/planeAvgSpeed
                 }
                 
-                
-                
-                
-                /*
-                 // Pulsante per aprire la modal della data
-                 Button(action: {
-                 dateModal.toggle()
-                 }) {
-                 Text("Select Date: \(formattedDate(selectedDate))")
-                 .font(.system(size: 25, weight: .light, design: .rounded))
-                 .frame(maxWidth: .infinity)
-                 .padding()
-                 .background(Color.blue.opacity(0.2))
-                 .cornerRadius(10)
-                 .padding(.horizontal)
-                 }
-                 .sheet(isPresented: $dateModal) {
-                 DateModal(selectedDate: $selectedDate)
-                 }
-                 */
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                //.padding(.top, 15)
-                
-                //Spacer()
-                
-            } //VStack
+            }//ZStack
             
-            //.background(.green.opacity(0.3))
-            //.background(.cyan.opacity(0.15))
-            .onAppear {
-                /* Togli il commento se non usi il modale
-                 if let first = locations.first {
-                 flyFromSelection = first
-                 flyToSelection = first
-                 }*/
-                
-                position = MapCameraPosition.region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: startingPoint.latitude, longitude: startingPoint.longitude), span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)))
-            }
-            .onChange(of: departure) { _, newValue in
-                if let newLocation = newValue {
-                    position = MapCameraPosition.region(
-                        MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: newLocation.latitude, longitude: newLocation.longitude), span: MKCoordinateSpan(latitudeDelta: 8, longitudeDelta: 8))
-                    )
-                    updateDistance()
-                }
-                
-                //calcolo le ore di volo
-                hours = distance/planeAvgSpeed
-            }
-            .onChange(of: destination) { _, newValue in
-                if let _ = newValue {
-                    updateDistance()
-                }
-                
-                //calcolo le ore di volo
-                hours = distance/planeAvgSpeed
-            }
-            
-        }//ZStack
-        
         }.edgesIgnoringSafeArea(.all)
     }//body
     
