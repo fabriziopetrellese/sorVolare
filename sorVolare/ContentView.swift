@@ -11,7 +11,20 @@ struct ContentView: View {
     
     var body: some View {
         
-        Text("Ciao")
+        NavigationStack {
+            
+            Text("hai gia prenotato un volo?")
+            
+            NavigationLink(destination: NoPrenotazioneView()) {
+                Text("No")
+                
+            }
+            
+            NavigationLink(destination: SiPrenotazioneView()) {
+                Text("Si")
+                
+            }
+        }
         
     } //body
     
