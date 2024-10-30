@@ -39,8 +39,6 @@ struct SiPrenotazioneView: View {
             return nil // Restituisce nil se uno dei valori è NULL
         }()
         
-        ZStack {
-            Color.cyan.opacity(0.17).ignoresSafeArea()
             VStack {
                 /*
                  Text("Select a departure and destination")
@@ -167,8 +165,6 @@ struct SiPrenotazioneView: View {
                 //calcolo le ore di volo
                 hours = distance/planeAvgSpeed
             }
-            
-        }//ZStack
         
         
     }//body
