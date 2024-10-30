@@ -13,15 +13,23 @@ struct NoPrenotazioneView: View {
         
         NavigationStack {
             
-            Text("Non hai prenotato il volo perchè ti spaventa qualcosa?")
+            Text("Se tra queste ci sono delle tue paure informati cliccandoci sopra.")
             
-            NavigationLink(destination: NoPauraView()) {
-                Text("No")
+            NavigationLink(destination: MotivoPaura1View()) {
+                Text("Turbolenze")
                 
             }
             
-            NavigationLink(destination: YesFearToFlightView()) {
-                Text("Si")
+            NavigationLink(destination: MotivoPaura2View()) {
+                Text("Malfuzionamento")
+                
+            }
+            NavigationLink(destination: MotivoPaura3View()) {
+                Text("Attacchi terroristici")
+                
+            }
+            NavigationLink(destination: MotivoPaura4View()) {
+                Text("Morte durante il volo")
                 
             }
         }

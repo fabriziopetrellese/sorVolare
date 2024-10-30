@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NoPauraView: View {
     var body: some View {
-        Text("ok, World!")
+        Text("")
     }
 }
 
