@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MotivoPaura2View: View {
+    @Binding var showModal1: Bool
+
     var body: some View {
         ScrollView{
             VStack{
@@ -24,5 +26,5 @@ struct MotivoPaura2View: View {
 }
 
 #Preview {
-    MotivoPaura2View()
+    //MotivoPaura2View()
 }

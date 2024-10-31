@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MotivoPaura1View: View {
+@Binding var showModal: Bool
+
     var body: some View {
         VStack{
             Image("pasted")
@@ -18,5 +20,5 @@ struct MotivoPaura1View: View {
     }
 }
 #Preview {
-    MotivoPaura1View()
+    //MotivoPaura1View()
 }
