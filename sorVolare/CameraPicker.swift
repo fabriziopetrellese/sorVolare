@@ -6,77 +6,99 @@
 //
 
 import SwiftUI
+import AVFoundation
 
 // Camera Picker veniva richiamato in questo modo da una ContentView, in questo esempio c'è un semplice bottone
-// e quando ci clicchi sopra si apre la camera
-
+// e quando ci clicchi sopra ti scatta la foto
 /*
- @State private var showCamera = false
- @State private var image = UIImage()
+struct ContentView: View {
 
- var body: some View {
-     VStack {
+    @State private var capturedImage: UIImage? = nil
+    private var cameraManager = CameraManager() // Manager per gestire la sessione della fotocamera
 
-         Image(uiImage: image)
-             .resizable()
-             .scaledToFit()
-             .frame(width: 1 * UIScreen.main.bounds.width, height: 0.7 * UIScreen.main.bounds.height)
-             .edgesIgnoringSafeArea(.all)
-         
-         Button {
-             showCamera = true
-         } label: {
-             Text("Camera Picker")
-             .font(.title2)
-             .padding()
-         }
-     }
-     .fullScreenCover(isPresented: $showCamera) {
-         CameraPicker(sourceType: .camera, selectedImage: $image)
-             .ignoresSafeArea()
-     }
- }
- */
-
-
-struct CameraPicker: UIViewControllerRepresentable {
-    @Environment(\.presentationMode) private var presentationMode
-    var sourceType: UIImagePickerController.SourceType = .camera
-    @Binding var selectedImage: UIImage
-
-    func makeUIViewController(context: UIViewControllerRepresentableContext<CameraPicker>) -> UIImagePickerController {
-        
-        let cameraPicker = UIImagePickerController()
-        cameraPicker.allowsEditing = false
-        cameraPicker.sourceType = sourceType
-        cameraPicker.delegate = context.coordinator
-
-        return cameraPicker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: UIViewControllerRepresentableContext<CameraPicker>) {
-
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    final class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-
-        var parent: CameraPicker
-
-        init(_ parent: CameraPicker) {
-            self.parent = parent
-        }
-
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-
-            if let image = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-                parent.selectedImage = image
+    var body: some View {
+        VStack {
+            if let image = capturedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height * 0.7)
+            } else {
+                Text("No Image Captured")
+                    .font(.title)
+                    .padding()
             }
 
-            parent.presentationMode.wrappedValue.dismiss()
+            Button("Capture Image") {
+                cameraManager.startCapture { image in
+                    self.capturedImage = image
+                }
+            }
+            .font(.title2)
+            .padding()
+        }
+    }
+}
+*/
+
+// Camera Manager per la gestione della sessione della fotocamera
+class CameraManager: NSObject, AVCapturePhotoCaptureDelegate {
+
+    private let captureSession = AVCaptureSession()
+    private let photoOutput = AVCapturePhotoOutput()
+    private var completion: ((UIImage?) -> Void)?
+
+    override init() {
+        super.init()
+        setupCamera()
+    }
+
+    private func setupCamera() {
+        guard let frontCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
+              let input = try? AVCaptureDeviceInput(device: frontCamera) else { return }
+
+        captureSession.beginConfiguration()
+        if captureSession.canAddInput(input) {
+            captureSession.addInput(input)
+        }
+        if captureSession.canAddOutput(photoOutput) {
+            captureSession.addOutput(photoOutput)
+        }
+        captureSession.commitConfiguration()
+    }
+
+    func startCapture(completion: @escaping (UIImage?) -> Void) {
+        self.completion = completion
+
+        // Avvia la sessione di acquisizione su un thread di background
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.captureSession.startRunning()
+
+            // Scatta automaticamente la foto dopo 2 secondi
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                let settings = AVCapturePhotoSettings()
+                self.photoOutput.capturePhoto(with: settings, delegate: self)
+            }
+        }
+    }
+
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let error = error {
+            print("Error capturing photo: \(error)")
+            completion?(nil)
+            return
+        }
+
+        if let data = photo.fileDataRepresentation(),
+           let image = UIImage(data: data) {
+            completion?(image)
+        } else {
+            completion?(nil)
+        }
+
+        // Stoppa la sessione dopo la cattura
+        DispatchQueue.global(qos: .background).async {
+            self.captureSession.stopRunning()
         }
     }
 }
