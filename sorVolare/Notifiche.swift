@@ -33,7 +33,6 @@ struct Notifiche: View {
                 content.body = "It's time for square breathing, take a moment for yourself!🌅"
                 content.sound = UNNotificationSound.default
                 
-
                 // show this notification five seconds from now
                 let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
 
