@@ -6,10 +6,6 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		A3A26AFF2CD50F98008BAAB0 /* EmotionRecView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A26AFE2CD50F98008BAAB0 /* EmotionRecView.swift */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXContainerItemProxy section */
 		2414A4B32CC5616700EB7DB2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -31,7 +27,6 @@
 		2414A4A22CC5616500EB7DB2 /* sorVolare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sorVolare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2414A4B22CC5616700EB7DB2 /* sorVolareTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = sorVolareTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2414A4BC2CC5616700EB7DB2 /* sorVolareUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = sorVolareUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A3A26AFE2CD50F98008BAAB0 /* EmotionRecView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmotionRecView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -80,7 +75,6 @@
 		2414A4992CC5616500EB7DB2 = {
 			isa = PBXGroup;
 			children = (
-				A3A26AFE2CD50F98008BAAB0 /* EmotionRecView.swift */,
 				2414A4A42CC5616500EB7DB2 /* sorVolare */,
 				2414A4B52CC5616700EB7DB2 /* sorVolareTests */,
 				2414A4BF2CC5616700EB7DB2 /* sorVolareUITests */,
@@ -242,7 +236,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3A26AFF2CD50F98008BAAB0 /* EmotionRecView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -406,6 +399,7 @@
 				DEVELOPMENT_TEAM = 2LK4JE65RJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera for taking photos, these will be used at the moment and immediately deleted.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -435,6 +429,7 @@
 				DEVELOPMENT_TEAM = 2LK4JE65RJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera for taking photos, these will be used at the moment and immediately deleted.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
