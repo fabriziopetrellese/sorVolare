@@ -1,10 +1,3 @@
-//
-//  NoBookedFlightView.swift
-//  sorVolare
-//
-//  Created by Tulli-OS on 29/10/24.
-//
-
 import SwiftUI
 
 struct NoPrenotazioneView: View {
@@ -15,54 +8,69 @@ struct NoPrenotazioneView: View {
     @State private var showModal2 = false
     @State private var showModal3 = false
     var body:some View {
-        VStack {
-            Text("Se tra queste ci sono delle tue paure cliccaci sopra per informarti")
-                .padding()
-            header
-                .background{
-                    RoundedRectangle(cornerRadius: 200)
-                        .foregroundColor(.white)
+        ZStack{
+            Color.cyan.opacity(0.4)
+                .edgesIgnoringSafeArea(.all)
+            VStack {
+                
+                Text("Hi, if any of these are your fears, click on them to learn more:")
+                    .bold()
+                    .italic()
+                    .shadow(color: Color .gray,radius:2, x:1,y:1)
+                    .padding()
+                header
+                    .background{
+                        RoundedRectangle(cornerRadius: 200)
+                            .foregroundColor(.white)
                         
-                }
-                .frame(width:100 , height: 30)
-            header1
-                .background{
-                    RoundedRectangle(cornerRadius: 200)
-                        .foregroundColor(.white)
+                    }
+                    .frame(width:200 , height: 30)
+                header1
+                    .background{
+                        RoundedRectangle(cornerRadius: 200)
+                            .foregroundColor(.white)
                         
-                }
-                .frame(width:200 , height: 30)
-            header2
-                .background{
-                    RoundedRectangle(cornerRadius: 200)
-                        .foregroundColor(.white)
+                    }
+                    .frame(width:200 , height: 30)
+                header2
+                    .background{
+                        RoundedRectangle(cornerRadius: 200)
+                            .foregroundColor(.white)
                         
-                }
-                .frame(width:100 , height: 30)
-            header3
-                .background{
-                    RoundedRectangle(cornerRadius: 200)
-                        .foregroundColor(.white)
+                    }
+                    .frame(width:200 , height: 30)
+                header3
+                    .background{
+                        RoundedRectangle(cornerRadius: 200)
+                            .foregroundColor(.white)
                         
-                }
-                .frame(width:100 , height: 30)
+                    }
+                    .frame(width:200 , height: 30)
+            }
+            
+            
+            
         }
-        
     }
-    
     
     
     
     
     var header: some View {
         VStack {
-            
-            Button("Turbolence.") {
-                showModal = true
+            HStack{
+                Image(systemName: "tornado")
+                Button("Turbolence.")  {
+                    showModal = true
                     
+                } .shadow(color: Color .gray,radius:2, x:1,y:1)
+                    .foregroundStyle(.black)
+                    .background{
+                        RoundedRectangle(cornerRadius: 30)
+                            .foregroundColor(.cyan).opacity(0.4)
+                    }
+                
             }
-            .foregroundStyle(.blue)
-            
         }
         .sheet(isPresented: $showModal) {
             // La vista del modale
@@ -95,13 +103,16 @@ struct NoPrenotazioneView: View {
         
         
         VStack {
-            Button("Malfunzionamento.") {
-                showModal1 = true
-            }
-            .foregroundStyle(.blue)
-            .background{
-                RoundedRectangle(cornerRadius: 30)
-                    .foregroundColor(.white)
+            HStack{
+                Image(systemName: "tornado")
+                Button("Malfunction.") {
+                    showModal1 = true
+                } .shadow(color: Color .gray,radius:2, x:1,y:1)
+                    .foregroundStyle(.black)
+                    .background{
+                        RoundedRectangle(cornerRadius: 30)
+                            .foregroundColor(.cyan).opacity(0.4)
+                    }
             }
         }
         .sheet(isPresented: $showModal1) {
@@ -114,13 +125,16 @@ struct NoPrenotazioneView: View {
         
         
         VStack {
-            Button("Attacchi.") {
-                showModal2 = true
-            }
-            .foregroundStyle(.blue)
-            .background{
-                RoundedRectangle(cornerRadius: 30)
-                    .foregroundColor(.white)
+            HStack{
+                Image(systemName: "tornado")
+                Button("Attack.") {
+                    showModal2 = true
+                } .shadow(color: Color .gray,radius:2, x:1,y:1)
+                    .foregroundStyle(.black)
+                    .background{
+                        RoundedRectangle(cornerRadius: 30)
+                            .foregroundColor(.cyan).opacity(0.4)
+                    }
             }
         }
         .sheet(isPresented: $showModal2) {
@@ -133,15 +147,17 @@ struct NoPrenotazioneView: View {
         
         
         VStack {
-            Button("Morte.") {
-                showModal3 = true
-            }
-            .foregroundStyle(.blue)
-            .background{
-                RoundedRectangle(cornerRadius: 30)
-                    .foregroundColor(.white)
-            }
-        }
+            HStack{
+                Image(systemName: "tornado")
+                Button("Death.") {
+                    showModal3 = true
+                } .shadow(color: Color .gray,radius:2, x:1,y:1)
+                    .foregroundStyle(.black)
+                    .background{
+                        RoundedRectangle(cornerRadius: 30)
+                            .foregroundColor(.cyan).opacity(0.4)
+                    }
+            }}
         .sheet(isPresented: $showModal3) {
             // La vista del modale
             MotivoPaura4View(showModal3: $showModal3)
