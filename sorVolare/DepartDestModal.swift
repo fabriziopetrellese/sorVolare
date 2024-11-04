@@ -29,7 +29,7 @@ struct DepartDestModal: View {
                 }
             }
             .navigationTitle(Text("Select city"))
-            .navigationBarItems(trailing: Button("Close") {
+            .navigationBarItems(trailing: Button("Done") {
                 presentationMode.wrappedValue.dismiss()
             })
         }

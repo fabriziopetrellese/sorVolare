@@ -2,7 +2,7 @@ import UIKit
 import CoreML
 import Vision
 
-class EmoRecFunction {
+class EmotionRecognition {
     
     // VARIABILE CHE CONTIENE L'IMMAGINE DA ANALIZZARE
     var inputImage: UIImage?
@@ -20,7 +20,10 @@ class EmoRecFunction {
     }
     
     // FUNZIONE PER CARICARE L'IMMAGINE E CHE ATTIVA LA FACE DETECTION
-    func loadImage() {
+    func loadImageAndDetect(capturedImage: UIImage?, completion: @escaping (String)->Void) {
+        
+        inputImage = capturedImage
+        
         if let image = inputImage {
             print("Immagine caricata dall'input: \(imageName)") // Log dell'immagine caricata
             detectFace(in: image) // Rileva il volto prima di fare la previsione
@@ -34,6 +37,7 @@ class EmoRecFunction {
                 risultatofinale = "Immagine non trovata"
             }
         }
+        completion(risultatofinale)
     }
     
     //FUNZIONE RITAGLIARE E RILEVARE IL VOLTO NELL'IMMAGINE
