@@ -1,61 +1,47 @@
 import SwiftUI
 
 struct NoPrenotazioneView: View {
-    
-    
+    @Binding var photos: [Photo]
+    /*
     @State private var showModal = false
     @State private var showModal1 = false
     @State private var showModal2 = false
     @State private var showModal3 = false
+     */
     var body:some View {
+        
         ZStack{
             Color.cyan.opacity(0.4)
                 .edgesIgnoringSafeArea(.all)
-            VStack {
+            //VStack {
+            List{
                 
-                Text("Hi, if any of these are your fears, click on them to learn more:")
-                    .bold()
-                    .italic()
-                    .shadow(color: Color .gray,radius:2, x:1,y:1)
-                    .padding()
-                header
-                    .background{
-                        RoundedRectangle(cornerRadius: 200)
-                            .foregroundColor(.white)
+            //}
+                ForEach($photos, id: \.id){ $photo in
+                    NavigationLink(destination: DetailView(photo : $photo,photos : $photos)){
+                        
+                        HStack{
+                            Image(photo.file)
+                                .resizable()
+                                .cornerRadius(10)
+                                .frame(width: 90, height: 90)
+                            Text(photo.title.uppercased())
+                        }
+                        
+                        
                         
                     }
-                    .frame(width:200 , height: 30)
-                header1
-                    .background{
-                        RoundedRectangle(cornerRadius: 200)
-                            .foregroundColor(.white)
-                        
-                    }
-                    .frame(width:200 , height: 30)
-                header2
-                    .background{
-                        RoundedRectangle(cornerRadius: 200)
-                            .foregroundColor(.white)
-                        
-                    }
-                    .frame(width:200 , height: 30)
-                header3
-                    .background{
-                        RoundedRectangle(cornerRadius: 200)
-                            .foregroundColor(.white)
-                        
-                    }
-                    .frame(width:200 , height: 30)
-            }
+                }
             
             
             
         }
+            
     }
     
     
     
-    
+    /*
     var header: some View {
         VStack {
             HStack{
@@ -104,7 +90,7 @@ struct NoPrenotazioneView: View {
         
         VStack {
             HStack{
-                Image(systemName: "tornado")
+                Image(systemName: "wrench.fill")
                 Button("Malfunction.") {
                     showModal1 = true
                 } .shadow(color: Color .gray,radius:2, x:1,y:1)
@@ -126,7 +112,7 @@ struct NoPrenotazioneView: View {
         
         VStack {
             HStack{
-                Image(systemName: "tornado")
+                Image(systemName: "flame.fill")
                 Button("Attack.") {
                     showModal2 = true
                 } .shadow(color: Color .gray,radius:2, x:1,y:1)
@@ -148,7 +134,7 @@ struct NoPrenotazioneView: View {
         
         VStack {
             HStack{
-                Image(systemName: "tornado")
+                Image(systemName: "heart.fill")
                 Button("Death.") {
                     showModal3 = true
                 } .shadow(color: Color .gray,radius:2, x:1,y:1)
@@ -162,9 +148,10 @@ struct NoPrenotazioneView: View {
             // La vista del modale
             MotivoPaura4View(showModal3: $showModal3)
         }
-       
+       */
     }
 }
+     
 #Preview {
-    NoPrenotazioneView()
+    //NoPrenotazioneView()
 }
