@@ -43,20 +43,20 @@ struct ContentView: View {
 
 // Camera Manager per la gestione della sessione della fotocamera
 class CameraManager: NSObject, AVCapturePhotoCaptureDelegate {
-
+    
     private let captureSession = AVCaptureSession()
     private let photoOutput = AVCapturePhotoOutput()
     private var completion: ((UIImage?) -> Void)?
-
+    
     override init() {
         super.init()
         setupCamera()
     }
-
+    
     private func setupCamera() {
         guard let frontCamera = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front),
               let input = try? AVCaptureDeviceInput(device: frontCamera) else { return }
-
+        
         captureSession.beginConfiguration()
         if captureSession.canAddInput(input) {
             captureSession.addInput(input)
@@ -66,14 +66,14 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate {
         }
         captureSession.commitConfiguration()
     }
-
+    
     func startCapture(completion: @escaping (UIImage?) -> Void) {
         self.completion = completion
-
+        
         // Avvia la sessione di acquisizione su un thread di background
         DispatchQueue.global(qos: .userInitiated).async {
             self.captureSession.startRunning()
-
+            
             // Scatta automaticamente la foto dopo 2 secondi
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 let settings = AVCapturePhotoSettings()
@@ -81,24 +81,45 @@ class CameraManager: NSObject, AVCapturePhotoCaptureDelegate {
             }
         }
     }
-
+    
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
             print("Error capturing photo: \(error)")
             completion?(nil)
             return
         }
-
+        
         if let data = photo.fileDataRepresentation(),
            let image = UIImage(data: data) {
-            completion?(image)
+            //completion?(image)
+            let grayscaleImage = applyGrayScaleFilter(to: image)
+            completion?(grayscaleImage)
         } else {
             completion?(nil)
         }
-
+        
         // Stoppa la sessione dopo la cattura
         DispatchQueue.global(qos: .background).async {
             self.captureSession.stopRunning()
         }
+    }
+    
+    
+    // Funzione per applicare il filtro scala di grigi e ruotare l'immagine
+    private func applyGrayScaleFilter(to image: UIImage) -> UIImage? {
+        let context = CIContext()
+        guard let currentFilter = CIFilter(name: "CIPhotoEffectMono"),
+              let ciImage = CIImage(image: image) else { return nil }
+        
+        currentFilter.setValue(ciImage, forKey: kCIInputImageKey)
+        
+        if let outputImage = currentFilter.outputImage,
+           let cgImage = context.createCGImage(outputImage, from: outputImage.extent) {
+            
+            // Crea un'immagine ruotata di 90 gradi a sinistra
+            let rotatedImage = UIImage(cgImage: cgImage, scale: image.scale, orientation: .right)
+            return rotatedImage
+        }
+        return nil
     }
 }
