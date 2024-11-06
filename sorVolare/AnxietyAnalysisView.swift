@@ -34,7 +34,7 @@ struct AnxietyAnalysisView: View {
     @EnvironmentObject var ideidentifier: ResultsObserver
     
     
-    let essayText = "Ad alta voce, leggi questo breve saggio per capire quale terapia è più indicata."
+    let essayText = "Please read this short text aloud so we can understand which therapy is best for you."
     
     init(audioFileURL: URL, observer: ResultsObserver) {
         self.audioFileURL = audioFileURL
@@ -51,7 +51,7 @@ struct AnxietyAnalysisView: View {
             VStack {
                 Spacer()
                 Text("How do you feel?")
-                    .font(.title2)
+                    .bold()
                 
                 
                 
@@ -68,6 +68,7 @@ struct AnxietyAnalysisView: View {
                 
                 if showEssay {
                     Text(essayText)
+                        .bold()
                         .padding()
                         .transition(.opacity)
                 }
