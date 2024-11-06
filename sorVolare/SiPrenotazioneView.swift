@@ -25,6 +25,10 @@ struct SiPrenotazioneView: View {
     
     var body: some View {
         
+        let string = ""
+        let bindingString = Binding.constant(string)
+        let resultObserver = ResultsObserver(result: bindingString)
+        
         let flyingRoute: [CLLocationCoordinate2D]? = {
             if let flyFrom = flyFromSelection, let flyTo = flyToSelection {
                 return [
@@ -158,7 +162,9 @@ struct SiPrenotazioneView: View {
                 // Navigazione alla prossima schermata
                 NavigationStack {
                     //Text("Testo di benvenuto e spiegazioni delle fiunzionalità")
-                    NavigationLink(destination: AnxietyAnalysisView()) {
+                    //NavigationLink(destination: AnxietyAnalysisView()) {
+                    NavigationLink(destination: AnxietyAnalysisView(audioFileURL: getDocumentsDirectory().appendingPathComponent("recording.m4a"), observer: resultObserver)) {
+                    //NavigationLink(destination: AnxietyAnalysisView(audioFileURL: getDocumentsDirectory(), observer: resultObserver)) {
                         Text("Anxiety Monitoring")
                             .font(.system(size: 25, weight: .light, design: .rounded))
                             .frame(maxWidth: .infinity)
@@ -196,6 +202,10 @@ struct SiPrenotazioneView: View {
     }
     
     
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
     
     private func formattedDate(_ date: Date) -> String {
         let formatter = DateFormatter()
