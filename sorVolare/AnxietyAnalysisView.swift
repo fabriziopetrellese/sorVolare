@@ -29,21 +29,27 @@ struct AnxietyAnalysisView: View {
     let essayText = "Per favore, leggi questo breve saggio in modo che possiamo capire quale terapia è più indicata."
     
     var body: some View {
+        ZStack {
+            Image("sfondo")
+                .resizable()
+                .frame(width: 1*UIScreen.main.bounds.width, height: 1*UIScreen.main.bounds.height)
+                .edgesIgnoringSafeArea(.all)
+            
         VStack {
             Spacer()
             Text("How do you feel?")
                 .font(.title2)
             
-           
-                
+            
+            
             HStack {
-                feedbackButton(feedback: 1, imageName: "hand.thumbsdown", color: .red)
-                feedbackButton(feedback: 0.5, imageName: "hand.raised.fingers.spread", color: .yellow)
-                feedbackButton(feedback: 0, imageName: "hand.thumbsup", color: .green)
+                feedbackButton(feedback: 1, imageName: "hand.thumbsdown.fill", color: .red)
+                feedbackButton(feedback: 0.5, imageName: "hand.raised.fingers.spread.fill", color: .yellow)
+                feedbackButton(feedback: 0, imageName: "hand.thumbsup.fill", color: .green)
             }
             .padding()
             
-    
+            
             
             Spacer()
             
@@ -87,7 +93,9 @@ struct AnxietyAnalysisView: View {
              //.navigationTitle("Anxiety Analysis")
              
              */
+            Spacer()
         }
+    }
         .padding()
         .onAppear {
             setupAudioRecorder()

@@ -35,155 +35,164 @@ struct SiPrenotazioneView: View {
             return nil
         }()
         
-        VStack {
+        ZStack {
+            Image("sfondo")
+                .resizable()
+                .frame(width: 1*UIScreen.main.bounds.width, height: 1*UIScreen.main.bounds.height)
+                .edgesIgnoringSafeArea(.all)
             
-            // Testo
-            Text("Select a departure and destination")
-                .font(.system(size: 25, weight: .light, design: .rounded))
-                .padding(.vertical, 3)
-            
-            // Versione con il modale
-            HStack {
-                /*
-                 Text("Fly from")
-                 .font(.title3)
-                 .padding(.leading)
-                 */
+            VStack {
+                //Spacer()
+                // Testo
+                Text("Select a departure and destination")
+                    .font(.system(size: 23, weight: .light, design: .rounded))
+                    .padding(.top, 8)
+                
+                // Versione con il modale
+                //HStack {
+                    /*
+                     Text("Fly from")
+                     .font(.title3)
+                     .padding(.leading)
+                     */
+                    Button(action: {
+                        isFlyFromModalPresented.toggle()
+                    }) {
+                        Text(flyFromSelection?.capitale ?? "Select a departure")
+                        //.font(.headline)
+                            .font(.system(size: 24, weight: .light, design: .rounded))
+                            .frame(maxWidth: .infinity)
+                            .padding(15)
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                    }
+                    .sheet(isPresented: $isFlyFromModalPresented) {
+                        DepartDestModal(selectedLocation: $flyFromSelection, locations: locations)
+                    }
+                    //.padding(.top, 3)
+                //}
+                
+                //HStack {
+                    /*
+                     Text("Fly to     ")
+                     .font(.title3)
+                     .padding(.leading)
+                     */
+                    // Pulsante per aprire il modale "Fly To"
+                    
+                    Button(action: {
+                        isFlyToModalPresented.toggle()
+                    }) {
+                        Text(flyToSelection?.capitale ?? "Select a destination")
+                            .font(.system(size: 24, weight: .light, design: .rounded))
+                        //.font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding(15)
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                    }
+                    .sheet(isPresented: $isFlyToModalPresented) {
+                        DepartDestModal(selectedLocation: $flyToSelection, locations: locations)
+                    }
+                    //.padding(.top)
+                //}
+                //.padding(.bottom, 10)
+                
+                
+                // Mappa
+                Map(position: $position) {
+                    if let route = flyingRoute {
+                        MapPolyline(coordinates: route)
+                            .stroke(.yellow, style: StrokeStyle(lineWidth: 1, dash: [5, 3]))
+                            .foregroundStyle(Color.yellow)
+                    }
+                    
+                    // Cerchio per il luogo di partenza
+                    if let flyFrom = flyFromSelection {
+                        MapCircle(center: CLLocationCoordinate2D(latitude: flyFrom.latitude, longitude: flyFrom.longitude), radius: 13000)
+                            .stroke(Color.yellow.opacity(0.9), lineWidth: 8)
+                    }
+                    
+                    // Cerchio per il luogo di destinazione
+                    if let flyTo = flyToSelection {
+                        MapCircle(center: CLLocationCoordinate2D(latitude: flyTo.latitude, longitude: flyTo.longitude), radius: 13000)
+                            .stroke(Color.yellow.opacity(0.9), lineWidth: 8)
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: 360)
+                .mapStyle(.hybrid(elevation: .realistic))
+                .cornerRadius(1000)
+                .padding(.horizontal, 10)
+                .padding(.top, 5)
+                
+                
+                
+                // Visualizza la distanza
+                Text(distance > 0 ? "Distance: \(String(format: "%.0f", distance)) km" : "Select a trip to see distance")
+                    .font(.system(size: 23, weight: .light, design: .rounded))
+                    .padding(.bottom, 5)
+                
+                // Pulsante per aprire il modale della data
                 Button(action: {
-                    isFlyFromModalPresented.toggle()
+                    isDateModalPresented.toggle()
                 }) {
-                    Text(flyFromSelection?.capitale ?? "Select a departure")
-                    //.font(.headline)
+                    Text("Select Date: \(formattedDate(appState.flightDate))")
                         .font(.system(size: 25, weight: .light, design: .rounded))
+                    //.font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.blue.opacity(0.2))
                         .cornerRadius(10)
                         .padding(.horizontal)
                 }
-                .sheet(isPresented: $isFlyFromModalPresented) {
-                    DepartDestModal(selectedLocation: $flyFromSelection, locations: locations)
+                .sheet(isPresented: $isDateModalPresented) {
+                    //DateModalView(selectedDate: $appState.flightDate)
+                    DateModal(selectedDate: $appState.flightDate)
+                        .environmentObject(appState)
                 }
-                .padding(.top, 5)
-            }
-            
-            HStack {
-                /*
-                 Text("Fly to     ")
-                 .font(.title3)
-                 .padding(.leading)
-                 */
-                // Pulsante per aprire il modale "Fly To"
+                //.padding(.top, 15)
                 
-                Button(action: {
-                    isFlyToModalPresented.toggle()
-                }) {
-                    Text(flyToSelection?.capitale ?? "Select a destination")
-                        .font(.system(size: 25, weight: .light, design: .rounded))
-                    //.font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(10)
-                        .padding(.horizontal)
-                }
-                .sheet(isPresented: $isFlyToModalPresented) {
-                    DepartDestModal(selectedLocation: $flyToSelection, locations: locations)
-                }
-                //.padding(.top)
-            }
-            //.padding(.bottom, 10)
-            
-            
-            // Mappa
-            Map(position: $position) {
-                if let route = flyingRoute {
-                    MapPolyline(coordinates: route)
-                        .stroke(.yellow, style: StrokeStyle(lineWidth: 1, dash: [5, 3]))
-                        .foregroundStyle(Color.yellow)
+                
+                // Navigazione alla prossima schermata
+                NavigationStack {
+                    //Text("Testo di benvenuto e spiegazioni delle fiunzionalità")
+                    NavigationLink(destination: AnxietyAnalysisView()) {
+                        Text("Anxiety Monitoring")
+                            .font(.system(size: 25, weight: .light, design: .rounded))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.blue)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                    }
                 }
                 
-                // Cerchio per il luogo di partenza
-                if let flyFrom = flyFromSelection {
-                    MapCircle(center: CLLocationCoordinate2D(latitude: flyFrom.latitude, longitude: flyFrom.longitude), radius: 13000)
-                        .stroke(Color.yellow.opacity(0.9), lineWidth: 8)
-                }
+                //Spacer()
+            }
+            .onAppear {
+                position = MapCameraPosition.region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: flySelectionDefault.latitude, longitude: flySelectionDefault.longitude), span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)))
                 
-                // Cerchio per il luogo di destinazione
-                if let flyTo = flyToSelection {
-                    MapCircle(center: CLLocationCoordinate2D(latitude: flyTo.latitude, longitude: flyTo.longitude), radius: 13000)
-                        .stroke(Color.yellow.opacity(0.9), lineWidth: 8)
+            }
+            .onChange(of: flyFromSelection) { _, newValue in
+                if let newLocation = newValue {
+                    position = MapCameraPosition.region(
+                        MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: newLocation.latitude, longitude: newLocation.longitude), span: MKCoordinateSpan(latitudeDelta: 8, longitudeDelta: 8))
+                    )
+                    updateDistance()
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: 380)
-            .mapStyle(.hybrid(elevation: .realistic))
-            .cornerRadius(1000)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 10)
-            
-            
-            
-            // Visualizza la distanza
-            Text(distance > 0 ? "Distance: \(String(format: "%.0f", distance)) km" : "Select a trip to see distance")
-                .font(.system(size: 25, weight: .light, design: .rounded))
-                .padding(.top, 5)
-            
-            // Pulsante per aprire il modale della data
-            Button(action: {
-                isDateModalPresented.toggle()
-            }) {
-                Text("Select Date: \(formattedDate(appState.flightDate))")
-                    .font(.system(size: 25, weight: .light, design: .rounded))
-                //.font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue.opacity(0.2))
-                    .cornerRadius(10)
-                    .padding(.horizontal)
-            }
-            .sheet(isPresented: $isDateModalPresented) {
-                //DateModalView(selectedDate: $appState.flightDate)
-                DateModal(selectedDate: $appState.flightDate)
-                    .environmentObject(appState)
-            }
-            .padding(.top, 15)
-            
-            
-            // Navigazione alla prossima schermata
-            NavigationStack {
-                //Text("Testo di benvenuto e spiegazioni delle fiunzionalità")
-                NavigationLink(destination: AnxietyAnalysisView()) {
-                    Text("Anxiety Monitoring")
-                        .font(.system(size: 25, weight: .light, design: .rounded))
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .padding(.horizontal)
+            .onChange(of: flyToSelection) { _, newValue in
+                if let _ = newValue {
+                    updateDistance()
                 }
             }
-            
-            Spacer()
-        }
-        .onAppear {
-            position = MapCameraPosition.region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: flySelectionDefault.latitude, longitude: flySelectionDefault.longitude), span: MKCoordinateSpan(latitudeDelta: 10, longitudeDelta: 10)))
+            .padding(.top, 10)
+            //.background(.green.opacity(0.3))
             
         }
-        .onChange(of: flyFromSelection) { _, newValue in
-            if let newLocation = newValue {
-                position = MapCameraPosition.region(
-                    MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: newLocation.latitude, longitude: newLocation.longitude), span: MKCoordinateSpan(latitudeDelta: 8, longitudeDelta: 8))
-                )
-                updateDistance()
-            }
-        }
-        .onChange(of: flyToSelection) { _, newValue in
-            if let _ = newValue {
-                updateDistance()
-            }
-        }
-        //.background(.green.opacity(0.3))
     }
     
     
