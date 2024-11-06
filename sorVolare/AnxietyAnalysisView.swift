@@ -26,7 +26,7 @@ struct AnxietyAnalysisView: View {
     private var cameraManager = CameraManager() // Manager per gestire la sessione della fotocamera
     private var emoRec = EmotionRecognition()
     
-    let essayText = "Per favore, leggi questo breve saggio in modo che possiamo capire quale terapia è più indicata."
+    let essayText = "Please read this short text aloud so we can understand which therapy is best for you."
     
     var body: some View {
         ZStack {
@@ -38,7 +38,7 @@ struct AnxietyAnalysisView: View {
         VStack {
             Spacer()
             Text("How do you feel?")
-                .font(.title2)
+                .bold()
             
             
             
@@ -55,8 +55,10 @@ struct AnxietyAnalysisView: View {
             
             if showEssay {
                 Text(essayText)
+                    .bold()
                     .padding()
                     .transition(.opacity)
+                
             }
             
             

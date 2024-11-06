@@ -1,10 +1,3 @@
-//
-//  SelfAwarenessSessionView.swift
-//  SirVolare
-//
-//  Created by Tulli-OS on 31/10/24.
-//
-
 import SwiftUI
 
 struct AwarenessTrainingView: View {
@@ -12,18 +5,17 @@ struct AwarenessTrainingView: View {
     @State private var currentPhase: Int = 0
     @State private var meditationTimer: Timer?
     @State private var thoughts: String = ""
-    @State private var savedThoughts: [String] = []
+    @State private var savedThoughts: [Thought] = []
     
     private let phases = [
-        "Prenditi un momento per riflettere... 🌟",
-        "Scrivi tre cose per cui sei grato... 📝",
-        "Rilassati e ascolta il tuo respiro... 🌬️",
-        "Chiudi gli occhi e rifletti... 🧘‍♂️"
+        "Write down what you feel... 📝"
+        
     ]
     
     var body: some View {
+        
         VStack {
-            Text("Autoconsapevolezza")
+            Text("Self-Awareness")
                 .font(.largeTitle)
                 .padding()
             
@@ -31,34 +23,61 @@ struct AwarenessTrainingView: View {
                 .font(.title)
                 .padding()
             
-            if isMeditating {
-                TextField("Scrivi qui i tuoi pensieri...", text: $thoughts)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-                    .frame(height: 100)
-                
-                Button("Salva Pensiero") {
-                    saveThought(thoughts)
-                    thoughts = "" // Resetta il campo di testo
-                }
+            TextField("Write down your thoughts...", text: $thoughts)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
+                .frame(height: 100)
+                .submitLabel(.done)
+                .onSubmit {
+                    UIApplication.shared.endEditing()
+                }
+            
+            Text("Associate an emotion with your thought")
+            
+            HStack {
+                Button("Serenity") {
+                    saveThought(thoughts, emotion: "Serenity")
+                    thoughts = ""
+                    UIApplication.shared.endEditing()
+                }
+                .buttonStyle(EmotionButtonStyle())
+                
+                Button("Fear") {
+                    saveThought(thoughts, emotion: "Fear")
+                    thoughts = ""
+                    UIApplication.shared.endEditing()
+                }
+                .buttonStyle(EmotionButtonStyle())
+                
+                Button("Joy") {
+                    saveThought(thoughts, emotion: "Joy")
+                    thoughts = ""
+                    UIApplication.shared.endEditing()
+                }
+                .buttonStyle(EmotionButtonStyle())
+                
+                Button("Anger") {
+                    saveThought(thoughts, emotion: "Anger")
+                    thoughts = ""
+                    UIApplication.shared.endEditing()
+                }
+                .buttonStyle(EmotionButtonStyle())
             }
             
-            Button(action: {
-                isMeditating ? stopMeditation() : startMeditation()
-            }) {
-                Text(isMeditating ? "Ferma Meditazione" : "Inizia Meditazione")
-                    .font(.title)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
+            List(savedThoughts, id: \.id) { thought in
+                VStack(alignment: .leading) {
+                    Text("Thought: \(thought.text)")
+                    Text("Emotion: \(thought.emotion)")
+                        .foregroundColor(.gray)
+                }
+            }
+            
+            // Pulsante per pulire la lista
+            Button("Clear the list") {
+                clearThoughts()
             }
             .padding()
-            
-            List(savedThoughts, id: \.self) { thought in
-                Text(thought)
-            }
+            .buttonStyle(EmotionButtonStyle())
         }
         .onAppear {
             loadSavedThoughts()
@@ -87,7 +106,8 @@ struct AwarenessTrainingView: View {
         currentPhase = (currentPhase + 1) % phases.count
     }
     
-    private func saveThought(_ thought: String) {
+    private func saveThought(_ thoughtText: String, emotion: String) {
+        let thought = Thought(text: thoughtText, emotion: emotion)
         savedThoughts.append(thought)
         saveThoughtsToFile()
     }
@@ -98,7 +118,7 @@ struct AwarenessTrainingView: View {
             let url = getDocumentsDirectory().appendingPathComponent("thoughts.json")
             try data.write(to: url)
         } catch {
-            print("Errore nel salvataggio dei pensieri: \(error)")
+            print("Error saving thoughts: \(error)")
         }
     }
     
@@ -106,15 +126,45 @@ struct AwarenessTrainingView: View {
         let url = getDocumentsDirectory().appendingPathComponent("thoughts.json")
         do {
             let data = try Data(contentsOf: url)
-            savedThoughts = try JSONDecoder().decode([String].self, from: data)
+            savedThoughts = try JSONDecoder().decode([Thought].self, from: data)
         } catch {
             print("Errore nel caricamento dei pensieri: \(error)")
         }
     }
     
+    private func clearThoughts() {
+        savedThoughts.removeAll()
+        saveThoughtsToFile() // Aggiorna il file con la lista vuota
+    }
+    
     private func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
+    }
+}
+
+// Struttura per rappresentare un pensiero con uno stato d'animo
+struct Thought: Identifiable, Codable {
+    let id = UUID()
+    let text: String
+    let emotion: String
+}
+
+// Estensione per chiudere la tastiera
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+// Stile personalizzato per i pulsanti di emozione
+struct EmotionButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.title3)
+            .padding()
+            .background(Color.blue.opacity(configuration.isPressed ? 0.3 : 0.2))
+            .cornerRadius(8)
     }
 }
 
