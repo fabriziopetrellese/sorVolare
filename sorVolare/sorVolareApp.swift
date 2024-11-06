@@ -14,7 +14,13 @@ struct sorVolareApp: App {
     
     var body: some Scene {
         WindowGroup {
+            
+            let string = ""
+            let bindingString = Binding.constant(string)
+            let resultObserver = ResultsObserver(result: bindingString)
+            
             ContentView()
+                .environmentObject(resultObserver)
         }
         .environmentObject(appState)
     }

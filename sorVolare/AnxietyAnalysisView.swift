@@ -9,11 +9,11 @@ import SwiftUI
 import AVFoundation
 import CoreMotion
 import CoreML
+import SoundAnalysis
 
 struct AnxietyAnalysisView: View {
     
     @EnvironmentObject var appState: AppState
-    @State private var audioRecorder: AVAudioRecorder?
     @State private var isRecording = false
     @State private var motionManager = CMMotionManager()
     @State private var tremorValues: [Double] = []
@@ -26,7 +26,20 @@ struct AnxietyAnalysisView: View {
     private var cameraManager = CameraManager() // Manager per gestire la sessione della fotocamera
     private var emoRec = EmotionRecognition()
     
-    let essayText = "Please read this short text aloud so we can understand which therapy is best for you."
+    
+    @State var audioFileURL: URL?
+    @State var observer: ResultsObserver
+    let audioSession = AVAudioSession.sharedInstance()
+    @State var audioRecorder: AVAudioRecorder?
+    @EnvironmentObject var ideidentifier: ResultsObserver
+    
+    
+    let essayText = "Ad alta voce, leggi questo breve saggio per capire quale terapia è più indicata."
+    
+    init(audioFileURL: URL, observer: ResultsObserver) {
+        self.audioFileURL = audioFileURL
+        self.observer = observer
+    }
     
     var body: some View {
         ZStack {
@@ -66,45 +79,75 @@ struct AnxietyAnalysisView: View {
             //Text("Tremore medio: \(averageTremor, specifier: "%.2f")")
             //.padding()
             
-            // Visualizzazione del messaggio di ansia
-            Text(anxietyMessage)
-                .font(.headline)
-                .foregroundColor(anxietyMessage.isEmpty ? .clear : .black)
+            VStack {
+                Spacer()
+                Text("How do you feel?")
+                    .font(.title2)
+                
+                
+                
+                HStack {
+                    feedbackButton(feedback: 1, imageName: "hand.thumbsdown.fill", color: .red)
+                    feedbackButton(feedback: 0.5, imageName: "hand.raised.fingers.spread.fill", color: .yellow)
+                    feedbackButton(feedback: 0, imageName: "hand.thumbsup.fill", color: .green)
+                }
                 .padding()
-            
-            
-            
-            
-            NavigationLink(destination: therapyView(for: appState.anxietyLevel), isActive: $analysisDone) {
-                EmptyView()
+                
+                
+                
+                Spacer()
+                
+                if showEssay {
+                    Text(essayText)
+                        .padding()
+                        .transition(.opacity)
+                }
+                
+                
+                //let averageTremor = tremorValues.isEmpty ? 0.0 : tremorValues.reduce(0, +) / Double(tremorValues.count)
+                //Text("Tremore medio: \(averageTremor, specifier: "%.2f")")
+                //.padding()
+                
+                /*
+                 // Visualizzazione del messaggio di ansia
+                 Text(anxietyMessage)
+                 .font(.headline)
+                 .foregroundColor(anxietyMessage.isEmpty ? .clear : .black)
+                 .padding()
+                 
+                 */
+                
+                
+                NavigationLink(destination: therapyView(for: appState.anxietyLevel), isActive: $analysisDone) {
+                    EmptyView()
+                }
+                
+                /*
+                 Spacer()
+                 //NavigationLink(destination: RelaxationTechniqueView()) {
+                 NavigationLink(destination: therapyView(for: appState.anxietyLevel)) {
+                 Text("Proceed to Therapy")
+                 .font(.system(size: 25, weight: .light, design: .rounded))
+                 .frame(maxWidth: .infinity)
+                 .padding()
+                 .background(Color.blue)
+                 .foregroundColor(.white)
+                 .cornerRadius(10)
+                 .padding(.horizontal)
+                 }
+                 //.navigationTitle("Anxiety Analysis")
+                 
+                 */
+                Spacer()
             }
-            
-            /*
-             Spacer()
-             //NavigationLink(destination: RelaxationTechniqueView()) {
-             NavigationLink(destination: therapyView(for: appState.anxietyLevel)) {
-             Text("Proceed to Therapy")
-             .font(.system(size: 25, weight: .light, design: .rounded))
-             .frame(maxWidth: .infinity)
-             .padding()
-             .background(Color.blue)
-             .foregroundColor(.white)
-             .cornerRadius(10)
-             .padding(.horizontal)
-             }
-             //.navigationTitle("Anxiety Analysis")
-             
-             */
-            Spacer()
         }
-    }
         .padding()
         .onAppear {
-            setupAudioRecorder()
+            observer = ResultsObserver(result: $ideidentifier.result)
         }
     }
     
-
+    
     
     private func feedbackButton(feedback: Double, imageName: String, color: Color) -> some View {
         Button(action: {
@@ -115,13 +158,12 @@ struct AnxietyAnalysisView: View {
                 .resizable()
                 .frame(width: 60, height: 60)
                 .foregroundColor(color)
-            
         }
         .padding()
         .disabled(isButtonsDisabled)
-
-    }
         
+    }
+    
     
     // MARK: - Feedback Handling
     func handleFeedback(_ feedback: Double) {
@@ -130,7 +172,6 @@ struct AnxietyAnalysisView: View {
         
         startAudioRecording()
         startTremorDetection()
-        //capturePhoto() // Da implementare
         
         cameraManager.startCapture { image in
             //self.capturedImage = image
@@ -153,9 +194,13 @@ struct AnxietyAnalysisView: View {
             stopRecording()
             stopTremorDetection()
             showEssay = false
-            updateAnxietyMessage()
             analysisDone = true
             isButtonsDisabled = false
+            
+            DispatchQueue.main.async {
+                appState.voiceTremor = mapAnxietyLevel()
+                updateAnxietyMessage()  // Una volta completata l'analisi vocale, aggiorna il messaggio
+            }
         }
     }
     
@@ -168,73 +213,50 @@ struct AnxietyAnalysisView: View {
     func stopRecording() {
         audioRecorder?.stop()
         isRecording = false
-        analyzeVoiceTremor()
+        analyzeAudio()
     }
     
     // MARK: - Voice Analysis
-    func analyzeVoiceTremor() {
-        guard let audioFileURL = audioRecorder?.url, FileManager.default.fileExists(atPath: audioFileURL.path) else {
-            print("File audio non disponibile.")
+    func analyzeAudio() {
+        guard let audioFileURL = audioFileURL else {
+            print("No audio file available for analysis.")
             return
         }
         
-        do {
-            let audioFile = try AVAudioFile(forReading: audioFileURL)
-            let buffer = AVAudioPCMBuffer(pcmFormat: audioFile.processingFormat, frameCapacity: AVAudioFrameCount(audioFile.length))
-            try audioFile.read(into: buffer!)
-            
-            let features = try extractFeatures(from: buffer!)
-            let model = try VoiceClassifier(configuration: MLModelConfiguration())
-            let prediction = try model.prediction(input: features)
-            
-            let anxietyLevel = mapAnxietyLevel(from: prediction.target)
-            appState.voiceTremor = anxietyLevel
-            
-            print("Voice Anxiety Level: \(anxietyLevel)")
-        } catch {
-            print("Errore nell'aprire il file audio: \(error.localizedDescription)")
-        }
-    }
-    
-    func extractFeatures(from buffer: AVAudioPCMBuffer) throws -> VoiceClassifierInput {
-        let frameCount = buffer.frameLength
-        guard let channelData = buffer.floatChannelData?[0] else {
-            throw NSError(domain: "AudioProcessing", code: 1, userInfo: [NSLocalizedDescriptionKey: "No channel data available"])
-        }
-        
-        let audioSamples = try MLMultiArray(shape: [NSNumber(value: 15600)], dataType: .float32)
-        
-        for i in 0..<min(Int(frameCount), 15600) {
-            audioSamples[i] = NSNumber(value: channelData[i])
-        }
-        
-        return VoiceClassifierInput(audioSamples: audioSamples)
-    }
-    
-    // MARK: - Audio Setup
-    func setupAudioRecorder() {
-        let audioFilename = getDocumentsDirectory().appendingPathComponent("recording.m4a")
-        let settings: [String: Any] = [
-            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 12000,
-            AVNumberOfChannelsKey: 1,
-            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-        ]
+        let audioFileAnalyzer = try! SNAudioFileAnalyzer(url: audioFileURL)
+        let request = try! SNClassifySoundRequest(mlModel: VoiceClassifier().model)
         
         do {
-            audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
+            try audioFileAnalyzer.add(request, withObserver: observer)
+            audioFileAnalyzer.analyze()
         } catch {
-            print("Errore nella registrazione audio: \(error)")
+            print("Failed to analyze audio: \(error)")
         }
     }
     
-    func mapAnxietyLevel(from target: String) -> Double {
-        switch target {
-        case "Non Ansioso":
-            return 0.0
-        case "Ansioso":
-            return 1.0
-        default:
+    func mapAnxietyLevel() -> Double {
+        // Dividi la stringa utilizzando ":" come separatore
+        let parts = ideidentifier.result.split(separator: ":")
+        
+        
+        
+        // Se la divisione ha successo e c'è almeno una parte
+        if let firstPart = parts.first {
+            let target = String(firstPart)  // Converti la prima parte in String
+            
+            print("!!!!!! \(target)")
+            
+            switch target {
+            case "neutral": // Non Ansioso
+                return 0.0
+            case "anxiety": // Ansioso
+                return 1.0
+            default:
+                return -1.0
+            }
+        } else {
+            // Se non c'è alcuna parte da analizzare, restituisci un valore di default
+            print("Il formato del risultato non è corretto.")
             return -1.0
         }
     }
@@ -294,15 +316,15 @@ struct AnxietyAnalysisView: View {
         let feedbackAnxiety = appState.userFeedback // Supponiamo sia normalizzato tra 0 e 1
         
         // Calcolo dell'ansia totale pesato
-        let totalAnxiety = (facialAnxiety * 0.35) + (vocalAnxiety * 0.25) + (handAnxiety * 0.25) + (feedbackAnxiety * 0.15)
+        let totalAnxiety = (facialAnxiety * 0.40) + (vocalAnxiety * 0.20) + (handAnxiety * 0.20) + (feedbackAnxiety * 0.20)
         
         // Aggiorna lo stato dell'ansia e il messaggio corrispondente
         appState.anxietyLevel = totalAnxiety
         
-        print("Facial Anxiety Value: \(facialAnxiety) - Facial Anxiety Normalized: \(facialAnxiety * 0.35)")
-        print("Vocal Anxiety Value: \(vocalAnxiety) - Vocal Anxiety Normalized: \(vocalAnxiety * 0.25)")
-        print("Hand Anxiety Value: \(handAnxiety) - Hand Anxiety Normalized: \(handAnxiety * 0.25)")
-        print("Feedback Anxiety Value: \(feedbackAnxiety) - Feedback Anxiety Normalized: \(feedbackAnxiety * 0.15)")
+        print("Facial Anxiety Value: \(facialAnxiety) - Facial Anxiety Normalized: \(facialAnxiety * 0.40)")
+        print("Vocal Anxiety Value: \(vocalAnxiety) - Vocal Anxiety Normalized: \(vocalAnxiety * 0.20)")
+        print("Hand Anxiety Value: \(handAnxiety) - Hand Anxiety Normalized: \(handAnxiety * 0.20)")
+        print("Feedback Anxiety Value: \(feedbackAnxiety) - Feedback Anxiety Normalized: \(feedbackAnxiety * 0.20)")
         print("Total Anxiety Score: \(totalAnxiety)")
         
         anxietyMessage = generateAnxietyMessage(for: totalAnxiety)
@@ -314,7 +336,7 @@ struct AnxietyAnalysisView: View {
             return "You are feeling relaxed."
         case 0.25..<0.5:
             return "You are feeling a bit anxious."
-        case 0.4...1.0:
+        case 0.5...1.0:
             return "You are feeling very anxious."
         default:
             return ""
@@ -373,35 +395,102 @@ struct AnxietyAnalysisView: View {
     
     
     
-    // MARK: - Facial Detection
-    func capturePhoto() {
-        // Implementa la logica per catturare la foto
-        
-        
-     
-        
-        
-        
-        
-        
-        
-        
-        
-    }
     
     
     
-    
-    
-    
-    
-    func getDocumentsDirectory() -> URL {
-        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return paths[0]
-    }
 }
 
 #Preview {
     //let appState = AppState()
     // AnxietyAnalysisView(appState: appState)
+}
+
+class ResultsObserver: NSObject, SNResultsObserving, ObservableObject {
+    
+    @Binding var classificationResult: String
+    private var classificationConfidences: [String: [Double]] = [:]  // Dizionario per memorizzare le confidenze di ogni etichetta
+    @Published var result: String = ""
+    
+    init(result: Binding<String>) {
+        _classificationResult = result
+    }
+    
+    func request(_ request: SNRequest, didProduce result: SNResult) {
+        
+        //var identifierReturn: String = ""
+        
+        guard let result = result as? SNClassificationResult else {
+            return
+        }
+        
+        // Per ogni classificazione prodotta, aggiorna il dizionario delle confidenze
+        if let classification = result.classifications.first {
+            let identifier = classification.identifier
+            let confidence = classification.confidence
+            
+            // Aggiungi la confidenza per questa etichetta
+            if classificationConfidences[identifier] == nil {
+                classificationConfidences[identifier] = [confidence]
+            } else {
+                classificationConfidences[identifier]?.append(confidence)
+            }
+            
+            // Stampa i valori intermedi per il debug
+            print("Predizione per \(identifier) con confidenza \(confidence)")
+            print("Confidenze accumulate per \(identifier): \(classificationConfidences[identifier]!)")
+            
+        }
+        //return identifierReturn
+    }
+    
+    func request(_ request: SNRequest, didFailWithError error: Error) {
+        print("The analysis failed: \(error.localizedDescription)")
+    }
+    
+    func requestDidComplete(_ request: SNRequest) {
+        // Calcolare la media ponderata delle confidenze per ogni etichetta
+        var finalResults: [String: Double] = [:]
+        
+        print("\nCalcolando la media ponderata delle confidenze per ciascuna etichetta...")
+        
+        // Per ogni etichetta, calcoliamo la media delle confidenze
+        for (label, confidences) in classificationConfidences {
+            let totalConfidence = confidences.reduce(0, +) // Somma delle confidenze
+            let count = confidences.count // Numero di predizioni
+            
+            // Calcolare la media ponderata (media semplice in questo caso, visto che ogni predizione ha lo stesso peso)
+            let averageConfidence = totalConfidence / Double(count)
+            finalResults[label] = averageConfidence
+            
+            // Stampa la media per ciascuna etichetta
+            print("Per \(label): somma delle confidenze = \(totalConfidence), numero di predizioni = \(count), media della confidenza = \(averageConfidence)")
+        }
+        
+        // Trovare l'etichetta con la confidenza media più alta
+        if let bestLabel = finalResults.max(by: { $0.value < $1.value }) {
+            let percent = bestLabel.value * 100.0
+            DispatchQueue.main.async {
+                self.classificationResult = "\(bestLabel.key): \(String(format: "%.2f", percent))%"
+            }
+            // Stampa il risultato finale
+            print("\nRisultato finale: \(bestLabel.key) con confidenza \(String(format: "%.2f", percent))%")
+        } else {
+            DispatchQueue.main.async {
+                self.classificationResult = "No classification result."
+            }
+        }
+        
+        print("The request completed successfully!")
+        
+        // Reset dei dizionari per la prossima registrazione
+        resetData()
+    }
+    
+    // Funzione per resettare i dizionari
+    private func resetData() {
+        classificationConfidences.removeAll()
+        
+        // Stampa del reset
+        print("\nDizionari resettati per la prossima analisi.")
+    }
 }
