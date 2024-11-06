@@ -48,6 +48,37 @@ struct AnxietyAnalysisView: View {
                 .frame(width: 1*UIScreen.main.bounds.width, height: 1*UIScreen.main.bounds.height)
                 .edgesIgnoringSafeArea(.all)
             
+        VStack {
+            Spacer()
+            Text("How do you feel?")
+                .bold()
+            
+            
+            
+            HStack {
+                feedbackButton(feedback: 1, imageName: "hand.thumbsdown.fill", color: .red)
+                feedbackButton(feedback: 0.5, imageName: "hand.raised.fingers.spread.fill", color: .yellow)
+                feedbackButton(feedback: 0, imageName: "hand.thumbsup.fill", color: .green)
+            }
+            .padding()
+            
+            
+            
+            Spacer()
+            
+            if showEssay {
+                Text(essayText)
+                    .bold()
+                    .padding()
+                    .transition(.opacity)
+                
+            }
+            
+            
+            //let averageTremor = tremorValues.isEmpty ? 0.0 : tremorValues.reduce(0, +) / Double(tremorValues.count)
+            //Text("Tremore medio: \(averageTremor, specifier: "%.2f")")
+            //.padding()
+            
             VStack {
                 Spacer()
                 Text("How do you feel?")
