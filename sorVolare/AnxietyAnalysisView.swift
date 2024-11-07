@@ -25,7 +25,7 @@ struct AnxietyAnalysisView: View {
     @State private var feedbackAnxiety: Double = 0.0
     private var cameraManager = CameraManager() // Manager per gestire la sessione della fotocamera
     private var emoRec = EmotionRecognition()
-    
+    @State var consentiAudio: Bool = false
     
     @State var audioFileURL: URL?
     @State var observer: ResultsObserver
@@ -114,7 +114,13 @@ struct AnxietyAnalysisView: View {
         }
         .padding()
         .onAppear {
+            print("ààààààààà \(consentiAudio)")
             observer = ResultsObserver(result: $ideidentifier.result)
+            AVAudioSession.sharedInstance().requestRecordPermission { isGranted in
+                if isGranted {
+                    consentiAudio = true
+                }
+            }
         }
     }
     
@@ -179,46 +185,44 @@ struct AnxietyAnalysisView: View {
     func startAudioRecording() {
         //audioRecorder?.record(forDuration: 5)
         //isRecording = true
-        
+        print("ààààààààà \(consentiAudio)")
         // Request permission for microphone access
-        AVAudioSession.sharedInstance().requestRecordPermission { isGranted in
-            if isGranted {
-                do {
-                    // Set up audio session
-                    try audioSession.setCategory(.playAndRecord, mode: .default)
-                    try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
-                    
-                    // Set up the file URL where the audio will be saved
-                    let fileName = UUID().uuidString + ".m4a"
-                    let tempDirectory = FileManager.default.temporaryDirectory
-                    audioFileURL = tempDirectory.appendingPathComponent(fileName)
-                    
-                    // Set up the audio recorder settings
-                    let settings: [String: Any] = [
-                        AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-                        AVSampleRateKey: 16000,
-                        AVNumberOfChannelsKey: 1,
-                        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-                    ]
-                    
-                    // Initialize and start the recorder
-                    audioRecorder = try AVAudioRecorder(url: audioFileURL!, settings: settings)
-                    audioRecorder?.record(forDuration: 5)  // Record for 5 seconds
-                    
-                    isRecording = true
-                } catch {
-                    print("Failed to start recording: \(error)")
-                }
-            } else {
-                print("Permission to record audio denied.")
+        if consentiAudio {
+            do {
+                // Set up audio session
+                try audioSession.setCategory(.playAndRecord, mode: .default)
+                try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+                
+                // Set up the file URL where the audio will be saved
+                let fileName = UUID().uuidString + ".m4a"
+                let tempDirectory = FileManager.default.temporaryDirectory
+                audioFileURL = tempDirectory.appendingPathComponent(fileName)
+                
+                // Set up the audio recorder settings
+                let settings: [String: Any] = [
+                    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                    AVSampleRateKey: 16000,
+                    AVNumberOfChannelsKey: 1,
+                    AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                ]
+                
+                // Initialize and start the recorder
+                audioRecorder = try AVAudioRecorder(url: audioFileURL!, settings: settings)
+                audioRecorder?.record(forDuration: 5)  // Record for 5 seconds
+                
+                isRecording = true
+            } catch {
+                print("Failed to start recording")
             }
         }
     }
     
     func stopRecording() {
-        audioRecorder?.stop()
-        isRecording = false
-        analyzeAudio()
+        if consentiAudio {
+            audioRecorder?.stop()
+            isRecording = false
+            analyzeAudio()
+        }
     }
     
     // MARK: - Voice Analysis
@@ -257,12 +261,12 @@ struct AnxietyAnalysisView: View {
             case "anxiety": // Ansioso
                 return 1.0
             default:
-                return -1.0
+                return 0.0
             }
         } else {
             // Se non c'è alcuna parte da analizzare, restituisci un valore di default
             print("Il formato del risultato non è corretto.")
-            return -1.0
+            return 0.0
         }
     }
     
