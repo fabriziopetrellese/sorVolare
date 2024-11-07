@@ -413,7 +413,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sorVolare/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera for taking photos, these will be used at the moment and immediately deleted.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "During app usage, photos will be taken to analyze your emotional state. These photos will not be saved.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to your michrophone to record your voice during the anxiety tests.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -445,7 +445,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = sorVolare/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera for taking photos, these will be used at the moment and immediately deleted.";
+				INFOPLIST_KEY_NSCameraUsageDescription = "During app usage, photos will be taken to analyze your emotional state. These photos will not be saved.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to your michrophone to record your voice during the anxiety tests.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
