@@ -47,5 +47,6 @@ class AppState: ObservableObject {
     }
      */
 
-    
+    @Published var yesClicked = false
+    @Published var noClicked = false
 }

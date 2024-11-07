@@ -202,6 +202,25 @@ struct SiPrenotazioneView: View {
             //.background(.green.opacity(0.3))
             
         }
+        .onAppear {
+            appState.yesClicked = true
+            if appState.yesClicked && !appState.noClicked{
+                let content = UNMutableNotificationContent()
+                content.title = "OverFly"
+                content.body = "It's time for square breathing, take a moment for yourself!"
+                content.sound = UNNotificationSound.default
+                
+                
+                // show this notification 3 days from now
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 259200, repeats: true)
+                
+                // choose a random identifier
+                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                
+                // add our notification request
+                UNUserNotificationCenter.current().add(request)
+            }
+        }
     }
     
     

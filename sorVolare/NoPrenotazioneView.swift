@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NoPrenotazioneView: View {
     @Binding var photos: [Photo]
+    @EnvironmentObject var appState: AppState
     /*
     @State private var showModal = false
     @State private var showModal1 = false
@@ -38,6 +39,25 @@ struct NoPrenotazioneView: View {
         }
             
     }
+        .onAppear {
+            appState.noClicked = true
+            if appState.noClicked && !appState.yesClicked{
+                let content = UNMutableNotificationContent()
+                content.title = "OverFly"
+                content.body = "It's time for square breathing, take a moment for yourself!"
+                content.sound = UNNotificationSound.default
+                
+                
+                // show this notification 3 days from now
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 259200, repeats: true)
+                
+                // choose a random identifier
+                let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                
+                // add our notification request
+                UNUserNotificationCenter.current().add(request)
+            }
+        }
     
     
     
