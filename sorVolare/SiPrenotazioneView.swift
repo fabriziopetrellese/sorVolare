@@ -164,6 +164,8 @@ struct SiPrenotazioneView: View {
                     //Text("Testo di benvenuto e spiegazioni delle fiunzionalità")
                     //NavigationLink(destination: AnxietyAnalysisView()) {
                     NavigationLink(destination: AnxietyAnalysisView(audioFileURL: getDocumentsDirectory().appendingPathComponent("recording.m4a"), observer: resultObserver)) {
+
+                    //NavigationLink(destination: AnxietyAnalysisView(audioFileURL: getDocumentsDirectory().appendingPathComponent("recording.m4a"), observer: resultObserver)) {
                     //NavigationLink(destination: AnxietyAnalysisView(audioFileURL: getDocumentsDirectory(), observer: resultObserver)) {
                         Text("Anxiety Monitoring")
                             .font(.system(size: 25, weight: .light, design: .rounded))

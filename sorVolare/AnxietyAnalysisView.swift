@@ -36,6 +36,7 @@ struct AnxietyAnalysisView: View {
     
     let essayText = "Please read this short text aloud so we can understand which therapy is best for you."
     
+    
     init(audioFileURL: URL, observer: ResultsObserver) {
         self.audioFileURL = audioFileURL
         self.observer = observer
@@ -147,7 +148,7 @@ struct AnxietyAnalysisView: View {
             //self.capturedImage = image
             emoRec.loadImageAndDetect(capturedImage: image) { risultato in
                 if (risultato != "FELICE" && risultato != "PREOCCUPATO") {
-                    print("Errore 0001")
+                    print("Errore VOLTO NON INQUADRATO")
                 } else {
                     if (risultato == "FELICE") {
                         appState.faceExpressionScore = 0
@@ -176,8 +177,42 @@ struct AnxietyAnalysisView: View {
     
     // MARK: - Audio Recording
     func startAudioRecording() {
-        audioRecorder?.record(forDuration: 5)
-        isRecording = true
+        //audioRecorder?.record(forDuration: 5)
+        //isRecording = true
+        
+        // Request permission for microphone access
+        AVAudioSession.sharedInstance().requestRecordPermission { isGranted in
+            if isGranted {
+                do {
+                    // Set up audio session
+                    try audioSession.setCategory(.playAndRecord, mode: .default)
+                    try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+                    
+                    // Set up the file URL where the audio will be saved
+                    let fileName = UUID().uuidString + ".m4a"
+                    let tempDirectory = FileManager.default.temporaryDirectory
+                    audioFileURL = tempDirectory.appendingPathComponent(fileName)
+                    
+                    // Set up the audio recorder settings
+                    let settings: [String: Any] = [
+                        AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                        AVSampleRateKey: 16000,
+                        AVNumberOfChannelsKey: 1,
+                        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+                    ]
+                    
+                    // Initialize and start the recorder
+                    audioRecorder = try AVAudioRecorder(url: audioFileURL!, settings: settings)
+                    audioRecorder?.record(forDuration: 5)  // Record for 5 seconds
+                    
+                    isRecording = true
+                } catch {
+                    print("Failed to start recording: \(error)")
+                }
+            } else {
+                print("Permission to record audio denied.")
+            }
+        }
     }
     
     func stopRecording() {

@@ -145,7 +145,7 @@ struct AwarenessTrainingView: View {
 
 // Struttura per rappresentare un pensiero con uno stato d'animo
 struct Thought: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     let text: String
     let emotion: String
 }
