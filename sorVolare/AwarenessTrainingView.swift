@@ -7,9 +7,10 @@ struct AwarenessTrainingView: View {
     @State private var thoughts: String = ""
     @State private var savedThoughts: [Thought] = []
     
+    @FocusState private var isKeyboardVisible: Bool // FocusState per monitorare la tastiera
+
     private let phases = [
         "Write down what you feel... 📝"
-        
     ]
     
     var body: some View {
@@ -28,8 +29,9 @@ struct AwarenessTrainingView: View {
                 .padding()
                 .frame(height: 100)
                 .submitLabel(.done)
+                .focused($isKeyboardVisible)  // Usa FocusState per monitorare la tastiera
                 .onSubmit {
-                    UIApplication.shared.endEditing()
+                    isKeyboardVisible = false // Chiude la tastiera quando si preme "Done"
                 }
             
             Text("Associate an emotion with your thought")
@@ -38,33 +40,33 @@ struct AwarenessTrainingView: View {
                 Button("Serenity") {
                     saveThought(thoughts, emotion: "Serenity")
                     thoughts = ""
-                    UIApplication.shared.endEditing()
+                    isKeyboardVisible = false // Chiude la tastiera
                 }
                 .buttonStyle(EmotionButtonStyle())
                 
                 Button("Fear") {
                     saveThought(thoughts, emotion: "Fear")
                     thoughts = ""
-                    UIApplication.shared.endEditing()
+                    isKeyboardVisible = false // Chiude la tastiera
                 }
                 .buttonStyle(EmotionButtonStyle())
                 
                 Button("Joy") {
                     saveThought(thoughts, emotion: "Joy")
                     thoughts = ""
-                    UIApplication.shared.endEditing()
+                    isKeyboardVisible = false // Chiude la tastiera
                 }
                 .buttonStyle(EmotionButtonStyle())
                 
                 Button("Anger") {
                     saveThought(thoughts, emotion: "Anger")
                     thoughts = ""
-                    UIApplication.shared.endEditing()
+                    isKeyboardVisible = false // Chiude la tastiera
                 }
                 .buttonStyle(EmotionButtonStyle())
             }
             
-            List(savedThoughts, id: \.id) { thought in
+            List(savedThoughts.reversed(), id: \.id) { thought in  // Inversione dell'ordine della lista
                 VStack(alignment: .leading) {
                     Text("Thought: \(thought.text)")
                     Text("Emotion: \(thought.emotion)")
@@ -78,6 +80,15 @@ struct AwarenessTrainingView: View {
             }
             .padding()
             .buttonStyle(EmotionButtonStyle())
+        }
+        .toolbar {
+            // Aggiungi il pulsante "Done" sopra la tastiera
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    isKeyboardVisible = false // Chiude la tastiera
+                }
+            }
         }
         .onAppear {
             loadSavedThoughts()
@@ -128,7 +139,7 @@ struct AwarenessTrainingView: View {
             let data = try Data(contentsOf: url)
             savedThoughts = try JSONDecoder().decode([Thought].self, from: data)
         } catch {
-            print("Errore nel caricamento dei pensieri: \(error)")
+            print("Error loading thoughts: \(error)")
         }
     }
     

@@ -1,10 +1,13 @@
 import SwiftUI
 
 struct AutogenicTrainingView: View {
+    
     @State private var progress: CGFloat = 0.0
     @State private var phase: BreathingPhase = .inhale
-    @State private var timer: Timer?
     @State private var isBreathingActive: Bool = false
+    @State private var dotPosition: CGPoint = CGPoint(x: -95, y: -95)
+    @State private var durataAnimazione = 0.0
+    @State private var cerchioInternoSize: CGFloat = 1.1 // Scale of the inner circle
     
     private enum BreathingPhase {
         case inhale, hold, exhale, holdAfterExhale
@@ -12,7 +15,6 @@ struct AutogenicTrainingView: View {
     
     var body: some View {
         ZStack {
-            
             Image("sfondo")
                 .resizable()
                 .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
@@ -34,58 +36,73 @@ struct AutogenicTrainingView: View {
                 Spacer()
                 
                 ZStack {
-                    Color.clear.frame(width: 150, height: 150)
+                    Rectangle()
+                        .frame(width: 195, height: 5) // Lato alto
+                        .foregroundColor(.cyan)
+                        .offset(y: -95)
                     
                     Rectangle()
-                        .frame(width: 155, height: 7) // Top side
-                        .foregroundColor(phase == .inhale ? .red : .cyan)
-                        .offset(y: -75)
+                        .frame(width: 5, height: 190) // Lato destro
+                        .foregroundColor(.cyan)
+                        .offset(x: 95)
                     
                     Rectangle()
-                        .frame(width: 155, height: 7) // Bottom side
-                        .foregroundColor(phase == .hold ? .red : .cyan)
-                        .offset(y: 75)
+                        .frame(width: 195, height: 5) // Lato basso
+                        .foregroundColor(.cyan)
+                        .offset(y: 95)
                     
                     Rectangle()
-                        .frame(width: 7, height: 156) // Left side
-                        .foregroundColor(phase == .exhale ? .red : .cyan)
-                        .offset(x: -75)
+                        .frame(width: 5, height: 190) // Lato sinistro
+                        .foregroundColor(.cyan)
+                        .offset(x: -95)
                     
-                    Rectangle()
-                        .frame(width: 7, height: 156) // Right side
-                        .foregroundColor(phase == .holdAfterExhale ? .red : .cyan)
-                        .offset(x: 75)
+                    // Cerchio che si muove lungo il quadrato
+                    Circle()
+                        .frame(width: 15, height: 15)
+                        .foregroundColor(.red)
+                        .offset(x: dotPosition.x, y: dotPosition.y)
+                        .animation(.linear(duration: durataAnimazione), value: dotPosition)
+                    
+                    // Secondo cerchio che si espande e contrae
+                    Circle()
+                        .frame(width: 47, height: 47)
+                        .foregroundColor(.blue.opacity(0.15))
+                        .scaleEffect(cerchioInternoSize) // Adjust scale based on breathing phase
+                        .animation(.easeInOut(duration: durataAnimazione), value: cerchioInternoSize)
+                    
+                    // Terzo cerchio che si espande e contrae
+                    Circle()
+                        .frame(width: 51, height: 51)
+                        .foregroundColor(.blue.opacity(0.10))
+                        .scaleEffect(cerchioInternoSize) // Adjust scale based on breathing phase
+                        .animation(.easeInOut(duration: durataAnimazione), value: cerchioInternoSize)
+                    
+                    // Quarto cerchio che si espande e contrae
+                    Circle()
+                        .frame(width: 55, height: 55)
+                        .foregroundColor(.blue.opacity(0.05))
+                        .scaleEffect(cerchioInternoSize) // Adjust scale based on breathing phase
+                        .animation(.easeInOut(duration: durataAnimazione), value: cerchioInternoSize)
+                    
+                    Text(phaseText())
+                        .font(.headline)
+                        .fontWeight(.medium)
+                        .padding(.bottom, 20)
+                        .offset(y: 8)
                 }
-                .padding()
                 
                 Spacer()
-                
-                Text(phaseText())
-                    .font(.largeTitle)
-                    .fontWeight(.medium)
-                    .padding(.bottom, 20)
-                
-                ZStack(alignment: .leading) {
-                    Rectangle()
-                        .frame(height: 20)
-                        .foregroundColor(Color.gray.opacity(0.2))
-                    
-                    Rectangle()
-                        .frame(width: progress * 300, height: 20)
-                        .foregroundColor(.blue)
-                }
-                .cornerRadius(10)
-                .frame(width: 300)
                 
                 Spacer()
                 
                 Button(action: {
-                    if isBreathingActive {
-                        stopBreathingCycle()
-                    } else {
-                        startBreathingCycle()
-                    }
                     isBreathingActive.toggle()
+                    if isBreathingActive {
+                        durataAnimazione = 4.0
+                        startBreathing()
+                    } else {
+                        stopBreathing()
+                    }
                 }) {
                     Text(isBreathingActive ? "Stop" : "Start")
                         .font(.title)
@@ -114,43 +131,34 @@ struct AutogenicTrainingView: View {
         }
     }
     
-    private func startBreathingCycle() {
-        timer?.invalidate()
+    private func stopBreathing() {
         phase = .inhale
-        progress = 0.0
-        advancePhase()
+        durataAnimazione = 0.0
+        dotPosition = CGPoint(x: -95, y: -95) // Reset dot position
+        cerchioInternoSize = 1.1 // Reset inner circle scale
     }
     
-    private func stopBreathingCycle() {
-        timer?.invalidate()
-        progress = 0.0
-        phase = .inhale
-    }
-    
-    private func advancePhase() {
-        let duration: TimeInterval = 4.0
+    private func startBreathing() {
         
         switch phase {
         case .inhale:
-            progress = 0.0
-            withAnimation(.linear(duration: duration)) {
-                progress = 1.0
-            }
+            dotPosition = CGPoint(x: 95, y: -95) // Move to top side
+            cerchioInternoSize = 3 // Expand the inner circle
         case .hold:
-            progress = 1.0
+            dotPosition = CGPoint(x: 95, y: 95) // Move down to right side
+            cerchioInternoSize = 3 // Hold the expanded size
         case .exhale:
-            progress = 1.0
-            withAnimation(.linear(duration: duration)) {
-                progress = 0.0
-            }
+            dotPosition = CGPoint(x: -95, y: 95) // Move to bottom side
+            cerchioInternoSize = 1.1 // Contract the inner circle
         case .holdAfterExhale:
-            progress = 0.0
+            dotPosition = CGPoint(x: -95, y: -95) // Move back to left side
+            cerchioInternoSize = 1.1 // Hold the contracted size
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + durataAnimazione) {
             if isBreathingActive {
                 phase = nextPhase()
-                advancePhase()
+                startBreathing()
             }
         }
     }

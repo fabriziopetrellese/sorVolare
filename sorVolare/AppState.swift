@@ -13,6 +13,9 @@ class AppState: ObservableObject {
     //@Published var destination: String = ""
     @Published var currentView: CurrentView = .welcome
     
+    @Published var yesClicked: Bool = false
+    @Published var noClicked: Bool = false
+    
     // Stato dell'ansia
     @Published var anxietyLevel: Double = 0
     @Published var handTremor: Double = 0
@@ -47,6 +50,5 @@ class AppState: ObservableObject {
     }
      */
 
-    @Published var yesClicked = false
-    @Published var noClicked = false
+    
 }

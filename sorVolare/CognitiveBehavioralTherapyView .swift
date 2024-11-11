@@ -11,11 +11,13 @@ struct CognitiveBehavioralTherapyView: View {
     @State private var isThoughtAnalyzed: Bool = false // Indica se un pensiero è stato analizzato
     @State private var isShowingSavedThoughts: Bool = false // Stato per presentare il foglio modale
     
+    @FocusState private var isKeyboardVisible: Bool // FocusState per monitorare la tastiera
+    
     var body: some View {
         ZStack {
             Image("sfondo")
                 .resizable()
-                .frame(width: 1 * UIScreen.main.bounds.width, height: 1 * UIScreen.main.bounds.height)
+                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                 .edgesIgnoringSafeArea(.all)
             
             VStack {
@@ -25,11 +27,12 @@ struct CognitiveBehavioralTherapyView: View {
                 
                 // Sezione per il campo di input e il pulsante "Salva Pensiero"
                 if !isThoughtAnalyzed {
-                    TextField("Scrivi un pensiero negativo", text: $negativeThought)
+                    TextField("Write what worries you", text: $negativeThought)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
+                        .focused($isKeyboardVisible) // Associa il campo di testo al FocusState
                     
-                    Button("Salva Pensiero") {
+                    Button("Save Thought") {
                         writeResult = writeThought(negativeThought)
                         saveNegativeThought(negativeThought)
                         negativeThought = "" // Resetta il campo di testo
@@ -52,7 +55,7 @@ struct CognitiveBehavioralTherapyView: View {
                 
                 // Pulsante "Analizza Pensiero" visibile solo se è stato salvato un pensiero
                 if isThoughtSaved && !isThoughtAnalyzed {
-                    Button("Analizza Pensiero") {
+                    Button("Analyzes Thought") {
                         analysisResult = analyzeThought(savedNegativeThoughts.last ?? "")
                         isThoughtAnalyzed = true // Segna il pensiero come analizzato e nasconde l'input
                         isThoughtSaved = false // Disabilita "Analizza" per il prossimo pensiero
@@ -67,26 +70,27 @@ struct CognitiveBehavioralTherapyView: View {
                 
                 // Mostra il risultato dell'analisi solo dopo che è stato generato
                 if !analysisResult.isEmpty {
-                    Text("Analisi: \(analysisResult)")
+                    Text("Analysis: \(analysisResult)")
                         .padding()
                 }
                 
                 // Sezione per il pensiero positivo (campo di input)
                 if isThoughtAnalyzed {
                     VStack {
-                        Text("Riscrivi il pensiero in modo positivo:")
+                        Text("Rewrite your thought in a positive way:")
                             .font(.headline)
                             .padding()
                         
-                        TextField("Es. Sono capace di superare questa situazione", text: $positiveThought)
+                        TextField("Es. I am capable of overcoming this situation", text: $positiveThought)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .padding()
                             .foregroundColor(.green)
+                            .focused($isKeyboardVisible) // Focus per questo TextField
                         
                         // Pulsante per salvare il pensiero positivo
-                        Button("Salva Pensiero Positivo") {
+                        Button("Save positive thought") {
                             // Logica per salvare il pensiero positivo, se necessario
-                            savedNegativeThoughts.append("Positivo: \(positiveThought)") // Salva il pensiero positivo
+                            savedNegativeThoughts.append("Positive: \(positiveThought)") // Salva il pensiero positivo
                             saveNegativeThoughtsToFile() // Salva nel file
                             positiveThought = "" // Resetta il pensiero positivo
                         }
@@ -104,7 +108,7 @@ struct CognitiveBehavioralTherapyView: View {
                 HStack {
                     // Pulsante "Nuovo Pensiero"
                     if isThoughtAnalyzed {
-                        Button("Nuovo Pensiero") {
+                        Button("New thought") {
                             // Resetta per permettere di inserire un nuovo pensiero
                             analysisResult = ""
                             writeResult = ""
@@ -134,6 +138,15 @@ struct CognitiveBehavioralTherapyView: View {
                     }
                 }
             }
+            .toolbar {
+                // Aggiungi il pulsante "Fine" sopra la tastiera
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        isKeyboardVisible = false // Chiude la tastiera
+                    }
+                }
+            }
         }
         .onAppear {
             loadSavedNegativeThoughts()
@@ -141,11 +154,11 @@ struct CognitiveBehavioralTherapyView: View {
     }
     
     private func writeThought(_ pensiero: String) -> String {
-        return "Questo è ciò che hai scritto: \(pensiero).  \n Ora leggilo ad alta voce e rifletti sul perché hai scritto ciò."
+        return "This is what you wrote: \(pensiero).  \n Now read it aloud and reflect on why you wrote that."
     }
     
     private func analyzeThought(_ thought: String) -> String {
-        return "Hai scritto: \(thought). Riformulalo in modo positivo."
+        return "You wrote: \(thought). \n Rephrase it in a positive way "
     }
     
     private func saveNegativeThought(_ thought: String) {
@@ -159,7 +172,7 @@ struct CognitiveBehavioralTherapyView: View {
             let url = getDocumentsDirectory().appendingPathComponent("negativeThoughts.json")
             try data.write(to: url)
         } catch {
-            print("Errore nel salvataggio dei pensieri negativi: \(error)")
+            print("Error in saving negative thoughts: \(error)")
         }
     }
     
@@ -169,7 +182,7 @@ struct CognitiveBehavioralTherapyView: View {
             let data = try Data(contentsOf: url)
             savedNegativeThoughts = try JSONDecoder().decode([String].self, from: data)
         } catch {
-            print("Errore nel caricamento dei pensieri negativi: \(error)")
+            print("Error in loading negative thoughts: \(error)")
         }
     }
     
@@ -191,7 +204,7 @@ struct SavedThoughtsView: View {
             List(thoughts.reversed(), id: \.self) { thought in
                 Text(thought)
             }
-            .navigationTitle("Pensieri Salvati")
+            .navigationTitle("Saved Thoughts")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button("Done") {
